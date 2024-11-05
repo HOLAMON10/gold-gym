@@ -5,7 +5,7 @@ import MenuUsuario from './componentesMenu/MenuAdmin'; // Asegúrate de que el n
 function App() {
   return (
     <div>
-      <MenuUsuario /> 
+      <MenuUsuario />  
       
     </div>
   );
