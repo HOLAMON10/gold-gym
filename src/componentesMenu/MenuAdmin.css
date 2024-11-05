@@ -1,0 +1,157 @@
+.container {
+    display: flex; /* Activa Flexbox */
+    justify-content: space-between; /* Espacia el contenido a ambos lados */
+    align-items: center; /* Alinea verticalmente los elementos al centro */
+}
+
+header {
+    width: 99%; /* Asegúrate de que el encabezado ocupe todo el ancho */
+    padding: 5px; /* Agrega un poco de padding para el espacio */
+}
+
+h1 {
+    color: forestgreen;
+    font-family: 'Playfair Display', serif;
+    font-size: 50px;
+}
+
+.inputs-Crear {
+    width: 200px;  /* Ancho del input */
+    height: 30px;  /* Altura del input */
+}
+
+button {
+    /* Estilos para el botón, si es necesario */
+}
+
+
+
+
+
+
+/* Estilo para card user */
+.card-client {
+    background: green;
+    width: 10rem; /* Ajusta el ancho a 10 rem */
+    height: 7rem; /* Define una altura específica para hacerla más rectangular */
+    padding: 10px; /* Reduce el padding para hacerlo más compacto */
+    border: 4px solid #7cdacc;
+    box-shadow: 0 6px 10px rgba(207, 212, 222, 1);
+    border-radius: 10px; /* Mantiene las esquinas redondeadas */
+    text-align: center;
+    color: #fff;
+    font-family: "Poppins", sans-serif;
+    transition: all 0.3s ease;
+}
+
+.card-client:hover {
+    transform: translateY(-10px);
+}
+
+.user-picture {
+    overflow: hidden;
+    object-fit: cover;
+    width: 4rem; /* Ajusta el ancho de la imagen de usuario */
+    height: 4rem; /* Ajusta la altura de la imagen de usuario */
+    border: 4px solid #7cdacc;
+    border-radius: 999px; /* Mantiene la forma redonda */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+.user-picture svg {
+    width: 2rem; /* Ajusta el tamaño del SVG dentro de la imagen */
+    fill: currentColor;
+}
+
+.name-client {
+    margin: 0;
+    margin-top: 10px; /* Reduce el margen superior para que haya menos espacio */
+    font-weight: 600;
+    font-size: 16px; /* Reduce el tamaño de fuente para que se ajuste mejor */
+}
+
+.name-client span {
+    display: block;
+    font-weight: 200;
+    font-size: 14px; /* Reduce el tamaño de fuente para la segunda línea */
+}
+
+
+/* Estilo para card user (fin) */
+
+
+
+
+
+
+/* Check box*/
+.my-form {
+    --_clr-primary: #666;
+    --_clr-hover: #f33195;
+    --_clr-checked: #127acf;
+  }
+  .my-form > div {
+    --_clr-current: var(--_clr-primary);
+  
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .my-form > div + div {
+    margin-block-start: 0.5rem;
+  }
+  .my-form label {
+    cursor: pointer;
+    color: var(--_clr-current);
+    transition: color 150ms ease-in-out;
+  }
+  
+  /* styled checkbox */
+  .my-form input[type="checkbox"] {
+    appearance: none;
+    outline: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    aspect-ratio: 1;
+    padding: 0.25rem;
+    background: transparent;
+    border: 1px solid var(--_clr-current);
+    border-radius: 2px;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+  }
+  .my-form input[type="checkbox"]::after {
+    content: "\2714";
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+    color: var(--_clr-checked);
+    font-size: inherit;
+    font-family: inherit;
+  }
+  
+  .my-form label:hover,
+  .my-form input[type="checkbox"]:focus-visible,
+  .my-form input[type="checkbox"]:focus-visible + label,
+  .my-form input[type="checkbox"]:hover,
+  .my-form input[type="checkbox"]:hover + label {
+    --_clr-current: var(--_clr-hover);
+  }
+  .my-form input[type="checkbox"]:focus-visible::after,
+  .my-form input[type="checkbox"]:hover::after {
+    opacity: 0.5;
+    color: var(--_clr-hover);
+  }
+  
+  .my-form input[type="checkbox"]:checked + label:not(:hover),
+  .my-form input[type="checkbox"]:checked:not(:hover) {
+    --_clr-current: var(--_clr-checked);
+  }
+  .my-form input[type="checkbox"]:checked::after {
+    opacity: 1;
+  }
+  
+  /* End Check box*/
