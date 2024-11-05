@@ -1,8 +1,13 @@
 import './App.css';
+import React from 'react';
+import MenuUsuario from './componentesMenu/MenuAdmin'; // Asegúrate de que el nombre coincide con el nombre del componente
 
 function App() {
   return (
-    <h1> Holaaaaaaa </h1>
+    <div>
+      <MenuUsuario /> 
+      
+    </div>
   );
 }
 
