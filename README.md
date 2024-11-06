@@ -68,3 +68,17 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+
+Instalación flask:
+1.Abrir terminal VSC y poner : pip install Flask
+
+Pasos para correr el sistema:
+1.Abrir terminal del proyecto "C:\Users\luisd\OneDrive\Escritorio\VSC\gold-gym" 
+
+2.Correr comando "npm start" para levantar la web
+
+3.Abrir terminal del backend "C:\Users\luisd\OneDrive\Escritorio\VSC\gold-gym\backend" 
+
+4.Correr comando "python app.py"
