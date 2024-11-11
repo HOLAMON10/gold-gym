@@ -1,14 +1,22 @@
 import './App.css';
-import React from 'react';
-import MenuUsuario from './componentesMenu/MenuAdmin'; // Asegúrate de que el nombre coincide con el nombre del componente
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useState } from 'react';
+import MenuAdmin from './componentesMenu/MenuAdmin' // Asegúrate de que el nombre coincide con el nombre del componente
+import Login from './Components/LoginForm';
+
 
 function App() {
+  const [message] = useState("");
   return (
-    <div>
-      <MenuUsuario />  
-       
-       
-    </div>
+   
+      
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/componentesMenu/MenuAdmin" element={<MenuAdmin/>} />
+        </Routes>
+      </Router>
+
   );
 }
 
