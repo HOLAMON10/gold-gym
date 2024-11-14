@@ -2,7 +2,7 @@ import React from "react";
 import './MenuAdmin.css';
 
 function FormCrearUsuario() {
-
+    
     const Agregarclic = () => {
         const nombre = document.getElementById("nombreRegistro").value;
         const cedula = document.getElementById("cedulaRegistro").value;

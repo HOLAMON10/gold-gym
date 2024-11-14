@@ -1,108 +1,70 @@
-body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    margin-top: 15%;
-}
 .wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  width: 400px; /* Adjust width as desired */
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background-color: #fff;
-  box-sizing: border-box;
-}
-form {
-  width: 100%; /* Make form fill the wrapper width */
-}
-#email-box, #password-box {
-  display:flex;
-  padding: 0; /* Remove default padding from fieldset */
-  border: 1px solid #ccc; /* Optional: border style */
-  width: 100%; /* Make it as wide as desired */
-  box-sizing: border-box; /* Ensures padding is included in width */
-}
-form {
-  width: 100%; /* Make form fill the wrapper width */
-}
-fieldset {
-  border: 1px solid #ccc;
-  padding: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-#button-box button {
-  width: 50%;
-  margin-left: 25%;
-  margin-bottom: 5%;
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#button-box button:hover {
-  background-color: #0056b3;
-}
-
-.forgot-password {
-  text-align: right;
-  font-size: 0.85em;
-  color: #007bff;
-  cursor: pointer;
-}
-
-input {
-  width: 60%;
-  padding: 10px;
-  border: none;
-  box-sizing: border-box;
-}
-
-#email-box, #password-box {
-  margin-bottom: 15px; /* Remove margins from nested div */
-}
-
-#email, #password{
-  width: 100%;
-  padding: 10px; /* Padding inside input */
-  border: none; /* Removes input border if using fieldset border */
-  box-sizing: border-box; /* Ensures padding is included in width */
-}
-
-#wrapper div{
-  text-align: center;
-  margin-top: 40%;
-}
-#termofservic {
-  font-size: 10px;
-  justify-items: center;
-}
-
-#term{
-  display: inline;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-#welcome-login{
-  font-size: 30px;
-  text-align: center;
-}
-
-#terms-container{
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  background-color: #f7f7f7; /* Light background color */
+}
+
+/* Form container with reduced width */
+.form-container {
+  width: 300px; /* Reduced width */
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 10px;
+}
+
+/* Title styling */
+.title {
   text-align: center;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  margin-bottom: 20px; /* Reduced space for balance */
+  font-size: 24px; /* Slightly smaller */
+  font-weight: 800;
+}
+
+/* Adjusted input and button styling */
+.input {
+  width: 100%;
+  padding: 10px 12px; /* Reduced padding */
+  margin: 8px 0; /* Spacing between inputs */
+  border-radius: 15px; /* Rounded corners */
+  border: 1px solid #c0c0c0;
+  box-sizing: border-box;
+}
+
+.page-link {
+  text-align: end;
+  color: #747474;
+  font-size: 12px;
+  margin-top: 8px; /* Balanced spacing */
+}
+
+.form-btn {
+  width: 100%;
+  padding: 10px;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  border-radius: 15px;
+  background-color: teal;
+  color: white;
+  cursor: pointer;
+  border: none;
+  margin-top: 12px; /* Spacing between button and input */
+}
+
+.sign-up-label {
+  text-align: center;
+  font-size: 10px;
+  color: #747474;
+  margin-top: 15px; /* Adjusted for better spacing */
+}
+
+.sign-up-link {
+  color: teal;
+  text-decoration: underline;
+  font-weight: 800;
+  cursor: pointer;
 }

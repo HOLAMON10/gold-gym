@@ -1,12 +1,16 @@
 import React from "react";
 import './MenuAdmin.css';
 import FormCrearUsuario from "./FormCrearUsuario";
+import NavigationMenu from "../Components/NavigationMenu";
 
 function MenuAdmin() {
     
     
     return (
         <div >
+            <NavigationMenu/>
+              
+            
             <header>
                 <div className="container">
                     <h1>Flex Fitness</h1>

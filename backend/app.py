@@ -56,14 +56,15 @@ def login():
         # If successful, create session and return success response
         session['loggedin'] = True
         session['username'] = record[5]
-        session['role'] = record[4]   # Assuming record[5] contains the username
-        
+        session['role'] = record[3]   # Assuming record[5] contains the username
+        print(record[3])
         response = {
             'message': 'Login successful',
             'username': session['username'],
-            'role': record[3],   
+            'role': session['role'],   
             'loggedin': True
         }
+        connection.close()
         return jsonify(response), 200
 
     else:
@@ -74,14 +75,12 @@ def login():
         }
         return jsonify(response), 401  # Unauthorized
 
-    connection.close()
+   
 
 @app.route('/logout', methods=['POST'])
 def logout():
-        # Clear session data on logout
-    session.pop('loggedin', None)
-    session.pop('username', None)
-    return jsonify({'message': 'Logout successful'}), 200
+    session.clear()  # Clear the session
+    return jsonify({'message': 'Logged out successfully'}), 200
 
 
 if __name__ == '__main__':

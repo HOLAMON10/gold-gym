@@ -1,3 +1,5 @@
+
+
 import React, { useState } from "react";
 import './LoginForm.css'
 import axios from "axios";
@@ -8,7 +10,7 @@ function Login() {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
-    
+
     // Crear el objeto con los datos del formulario
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -16,17 +18,20 @@ function Login() {
             const response = await axios.post(
                 "http://127.0.0.1:5000/login",
                 { username, password },
-                { withCredentials: true }  // Required to include session cookies
+                {withCredentials : true}  // Required to include session cookies
             );
             // Check if response and response.data exist
             if (response && response.data) {
                 setMessage(response.data.message);
-                const {message,role} = response.data
-                console.log("Role:", role)
-                if (role ==='Cliente'){
+               
+                sessionStorage.setItem("isLoggedIn", true);
+                sessionStorage.setItem("role", response.data.role);
+                sessionStorage.setItem("username", response.data.username);
+                
+                if (response.data.role === 'Cliente') {
                     window.location.href = "/pantallaclientes/menucliente.html";
                 }
-                else if (role ==='Empleado'){
+                else if (response.data.role === 'Empleado') {
                     navigate('componentesMenu/MenuAdmin')
                 }
             } else {
@@ -45,46 +50,45 @@ function Login() {
 
     return (
         <div className="wrapper">
-            <form onSubmit={handleLogin}>
-                <h1 id="welcome-login">Welcome to Gyms</h1>
-                <div>
-                    <label className="">
-                        <div>Email</div>
-                    </label>
-                </div>
-                <div>
-                    <fieldset id="email-box">
-                        <span>
-                            <div>
-                                <input placeholder="Usuario" value={username}  type="text" onChange={(e) => setUsername(e.target.value)} />
-                            </div>
-                        </span>
-                    </fieldset>
-                </div>
-                <div>
-                    <label className="">
-                        <div>Password</div>
-                    </label>
-                </div>
-                <div>
-                    <fieldset id="password-box">
-                        <span>
-                            <div>
-                                <input placeholder="Password" type="password" spellCheck="false"  value={password} onChange={(e) => setPassword(e.target.value)} />
+            <div className="form-container">
+                <form onSubmit={handleLogin}>
+                    <h1 className="title">Welcome to Gyms</h1>
 
-                            </div>
-                        </span>
-                    </fieldset>
-                    <p class="forgot-password">Forgot your password?</p>
-                </div>
-                <div id="button-box">
-                    <button type="submit">Log in</button>
-                </div>
-                <div id="terms-container">
-                    <div id='termofservic'>By Continuing, you agree to Gyms <div id="term">Terms of Service</div></div>
-                </div>
-            </form>
-            <p>{message}</p>
+                    <div>
+                        
+                        <input
+                            className="input"
+                            placeholder="Usuario"
+                            value={username}
+                            type="text"
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                    </div>
+
+                    <div>
+                        
+                        <input
+                            className="input"
+                            placeholder="Contrasena"
+                            type="password"
+                            spellCheck="false"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+
+                    <p className="page-link">
+                        <span className="page-link-label">Forgot your password?</span>
+                    </p>
+
+                    <button type="submit" className="form-btn">Log in</button>
+
+                    <div className="sign-up-label">
+                        By Continuing, you agree to Gyms <span className="sign-up-link">Terms of Service</span>
+                    </div>
+                </form>
+                <p>{message}</p>
+            </div>
         </div>
     );
 }
