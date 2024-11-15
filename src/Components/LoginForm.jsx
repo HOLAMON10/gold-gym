@@ -18,16 +18,16 @@ function Login() {
             const response = await axios.post(
                 "http://127.0.0.1:5000/login",
                 { username, password },
-                {withCredentials : true}  // Required to include session cookies
+                { withCredentials: true }  // Required to include session cookies
             );
             // Check if response and response.data exist
             if (response && response.data) {
                 setMessage(response.data.message);
-               
+
                 sessionStorage.setItem("isLoggedIn", true);
                 sessionStorage.setItem("role", response.data.role);
                 sessionStorage.setItem("username", response.data.username);
-                
+
                 if (response.data.role === 'Cliente') {
                     window.location.href = "/pantallaclientes/menucliente.html";
                 }
@@ -50,44 +50,40 @@ function Login() {
 
     return (
         <div className="wrapper">
-            <div className="form-container">
-                <form onSubmit={handleLogin}>
-                    <h1 className="title">Welcome to Gyms</h1>
+            <div className="left-side">
+                <div className="form-container">
+                    <form onSubmit={handleLogin}>
+                        <h1 className="title">Welcome to Gyms</h1>
+                        <div>
+                            <input
+                                className="input"
+                                placeholder="Username"
+                                value={username}
+                                type="text"
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <input
+                                className="input"
+                                placeholder="Password"
+                                type="password"
+                                spellCheck="false"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                        <p className="forgot-password">
+                            <span className="page-link-label">Forgot your password?</span>
+                        </p>
+                        <button type="submit" className="form-btn">Log in</button>
+                    </form>
+                    <p>{message}</p>
+                </div>
+            </div>
 
-                    <div>
-                        
-                        <input
-                            className="input"
-                            placeholder="Usuario"
-                            value={username}
-                            type="text"
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                    </div>
-
-                    <div>
-                        
-                        <input
-                            className="input"
-                            placeholder="Contrasena"
-                            type="password"
-                            spellCheck="false"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-
-                    <p className="page-link">
-                        <span className="page-link-label">Forgot your password?</span>
-                    </p>
-
-                    <button type="submit" className="form-btn">Log in</button>
-
-                    <div className="sign-up-label">
-                        By Continuing, you agree to Gyms <span className="sign-up-link">Terms of Service</span>
-                    </div>
-                </form>
-                <p>{message}</p>
+            <div className="right-side">
+                {/* Right side with background image */}
             </div>
         </div>
     );

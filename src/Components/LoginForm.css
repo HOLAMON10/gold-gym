@@ -1,70 +1,93 @@
 .wrapper {
   display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  background-color: #f7f7f7; /* Light background color */
+  width: 100%;
 }
 
-/* Form container with reduced width */
+/* Left side with black background */
+.left-side {
+  flex: 1;
+  background-color: #111; /* Dark black background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem; /* Add padding to create space around the form */
+}
+
+/* Form container styling */
 .form-container {
-  width: 300px; /* Reduced width */
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  border-radius: 10px;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* Title styling */
+/* Form title */
 .title {
   text-align: center;
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-  margin-bottom: 20px; /* Reduced space for balance */
-  font-size: 24px; /* Slightly smaller */
-  font-weight: 800;
+  color: #000;
+  font-weight: 600;
+  margin-bottom: 1.5rem; /* Reduced margin to bring elements closer */
 }
 
-/* Adjusted input and button styling */
+/* Input fields */
 .input {
   width: 100%;
-  padding: 10px 12px; /* Reduced padding */
-  margin: 8px 0; /* Spacing between inputs */
-  border-radius: 15px; /* Rounded corners */
-  border: 1px solid #c0c0c0;
-  box-sizing: border-box;
+  padding: 0.8rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid #333; /* Dark border for subtle definition */
+  background-color: #f9f9f9;
+  color: #000;
 }
 
-.page-link {
-  text-align: end;
-  color: #747474;
-  font-size: 12px;
-  margin-top: 8px; /* Balanced spacing */
+.input::placeholder {
+  color: #666; /* Lighter placeholder text */
 }
 
+/* Button styling */
 .form-btn {
   width: 100%;
-  padding: 10px;
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-  border-radius: 15px;
-  background-color: teal;
-  color: white;
-  cursor: pointer;
+  padding: 0.8rem;
   border: none;
-  margin-top: 12px; /* Spacing between button and input */
-}
-
-.sign-up-label {
-  text-align: center;
-  font-size: 10px;
-  color: #747474;
-  margin-top: 15px; /* Adjusted for better spacing */
-}
-
-.sign-up-link {
-  color: teal;
-  text-decoration: underline;
-  font-weight: 800;
+  border-radius: 4px;
+  background-color: #333; /* Dark grey for contrast */
+  color: #fff;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.form-btn:hover {
+  background-color: #000; /* Darker hover effect */
+}
+
+/* Forgot Password text - aligned to the right */
+.forgot-password {
+  align-self: flex-start; /* Align the link to the right */
+  margin-top: -0.5rem; /* Reduce space to make it closer to the password input */
+  margin-bottom: 1rem;
+}
+
+.page-link-label, .sign-up-label, .sign-up-link {
+  color: #333; /* Dark grey text */
+  text-decoration: none;
+  text-align: right;
+}
+
+.page-link-label:hover, .sign-up-link:hover {
+  text-decoration: underline;
+}
+
+/* Right side with background image */
+.right-side {
+  flex: 1;
+  background-image: url('/src/images/login.jpg');
+  background-size: cover;
+  background-position: center;
 }

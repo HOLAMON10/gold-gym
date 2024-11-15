@@ -9,18 +9,16 @@ function App() {
 
     <Router>
       <Routes>
-        <Route
-          path="/componentesMenu/MenuAdmin"
-          element={<PrivateRoute element={MenuAdmin} />}
-        />
-        {/* Use PrivateRoute for protected routes */}
+        {/* Public route for the login page */}
+        <Route path="/" element={<Login />} />
+
+        {/* Private route for MenuAdmin page, only accessible if authenticated */}
         <Route
           path="/componentesMenu/MenuAdmin"
           element={<PrivateRoute element={MenuAdmin} />}
         />
       </Routes>
     </Router>
-
   );
 }
 
