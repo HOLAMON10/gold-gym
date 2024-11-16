@@ -3,87 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valerio Fitness</title>
+    <title>Flex Fitness</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 </head>
 <body class="bg-gray-100">
     <!-- Barra de navegación -->
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Valerio Fitness</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-gray-100">
-        <nav class="bg-white shadow-lg">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex justify-between items-center py-4">
-                    <h1 class="text-2xl font-bold text-indigo-600">Valerio Fitness</h1>
-                    <div class="flex space-x-4">
-                        <a href="menucliente.html" class="text-gray-600 hover:text-indigo-600">Inicio</a>
-                        <a href="rutinascliente.html" class="text-gray-600 hover:text-indigo-600">Rutinas</a>
-                        <a href="dietacliente.html" class="text-gray-600 hover:text-indigo-600">Dieta</a>
-                        <a href="perfilcliente.html" class="text-gray-600 hover:text-indigo-600">Mi Perfil</a>
-                    </div>
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-2xl font-bold text-indigo-600">Flex Fitness</h1>
+                <div class="flex space-x-4">
+                    <a href="menucliente.html" class="text-gray-600 hover:text-indigo-600">Inicio</a>
+                    <a href="rutinascliente.html" class="text-gray-600 hover:text-indigo-600">Rutinas</a>
+                    <a href="dietacliente.html" class="text-gray-600 hover:text-indigo-600">Alimenticion</a>
+                    <a href="perfilcliente.html" class="text-gray-600 hover:text-indigo-600">Mi Perfil</a>
                 </div>
             </div>
-        </nav>
-    </body>
-    </html>
+        </div>
+    </nav>
 
     <!-- Contenido principal -->
     <div class="max-w-7xl mx-auto px-4 py-8">
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Bienvenido a Valerio Fitness</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="p-4 bg-indigo-50 rounded-lg">
-                    <h3 class="text-lg font-semibold text-indigo-600 mb-2">Rutinas Personalizadas</h3>
-                    <p class="text-gray-600">Descubre rutinas adaptadas a tus objetivos y nivel de experiencia.</p>
-                </div>
-                <div class="p-4 bg-indigo-50 rounded-lg">
-                    <h3 class="text-lg font-semibold text-indigo-600 mb-2">Plan de Nutrición</h3>
-                    <p class="text-gray-600">Planes de alimentación diseñados para maximizar tus resultados.</p>
-                </div>
-                <div class="p-4 bg-indigo-50 rounded-lg">
-                    <h3 class="text-lg font-semibold text-indigo-600 mb-2">Seguimiento Personal</h3>
-                    <p class="text-gray-600">Monitorea tu progreso y alcanza tus metas fitness.</p>
-                </div>
-            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Bienvenido a Flex Fitness</h2>
 
             <div class="border-t border-gray-200 pt-6">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Tu Progreso</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="text-center">
+                
+                <!-- Estadísticas -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="p-4 bg-indigo-50 rounded-lg text-center">
                         <p class="text-2xl font-bold text-indigo-600">12</p>
                         <p class="text-gray-600">Entrenamientos</p>
                     </div>
-                    <div class="text-center">
+                    <div class="p-4 bg-indigo-50 rounded-lg text-center">
                         <p class="text-2xl font-bold text-indigo-600">5.2k</p>
                         <p class="text-gray-600">Calorías</p>
                     </div>
-                    <div class="text-center">
+                    <div class="p-4 bg-indigo-50 rounded-lg text-center">
                         <p class="text-2xl font-bold text-indigo-600">8</p>
                         <p class="text-gray-600">Días seguidos</p>
                     </div>
-                    <div class="text-center">
+                    <div class="p-4 bg-indigo-50 rounded-lg text-center">
                         <p class="text-2xl font-bold text-indigo-600">3</p>
                         <p class="text-gray-600">Objetivos</p>
                     </div>
                 </div>
+
+                <!-- Gráfico -->
+                <div class="mt-8 h-64">
+                    <canvas id="progressChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
-</body>
+
     <!-- Footer -->
     <footer class="bg-white mt-12 py-8">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center text-gray-600">
-                <p>© 2024 Valerio Fitness. Todos los derechos reservados.</p>
+                <p>© 2024 Flex Fitness. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Configuración del gráfico
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                datasets: [
+                    {
+                        label: 'Calorías Quemadas',
+                        data: [450, 520, 480, 600, 550, 420, 500],
+                        borderColor: 'rgb(79, 70, 229)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Minutos de Ejercicio',
+                        data: [45, 55, 50, 65, 60, 40, 55],
+                        borderColor: 'rgb(5, 150, 105)',
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

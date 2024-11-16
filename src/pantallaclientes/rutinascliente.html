@@ -4,113 +4,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rutinas de Gimnasio</title>
+    <title>Rutinas</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-50">
     <!-- Barra de navegación -->
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Valerio Fitness</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-gray-100">
-        <!-- Barra de navegación -->
-        <nav class="bg-white shadow-lg">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex justify-between items-center py-4">
-                    <h1 class="text-2xl font-bold text-indigo-600">Valerio Fitness</h1>
-                    <div class="flex space-x-4">
-                        <a href="menucliente.html" class="text-gray-600 hover:text-indigo-600">Inicio</a>
-                        <a href="rutinascliente.html" class="text-gray-600 hover:text-indigo-600">Rutinas</a>
-                        <a href="dietacliente.html" class="text-gray-600 hover:text-indigo-600">Dieta</a>
-                        <a href="perfilcliente.html" class="text-gray-600 hover:text-indigo-600">Mi Perfil</a>
-
-                    </div>
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-2xl font-bold text-indigo-600">Flex Fitness</h1>
+                <div class="flex space-x-6">
+                    <a href="menucliente.html" class="text-gray-600 hover:text-indigo-600">Inicio</a>
+                    <a href="rutinascliente.html" class="text-gray-600 hover:text-indigo-600">Rutinas</a>
+                    <a href="dietacliente.html" class="text-gray-600 hover:text-indigo-600">Alimentación</a>
+                    <a href="perfilcliente.html" class="text-gray-600 hover:text-indigo-600">Mi Perfil</a>
                 </div>
             </div>
-        </nav>
-    </body>
-    </html>
+        </div>
+    </nav>
 
     <!-- Contenido principal -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Pecho -->
-        <section class="mb-12">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Pecho</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Tarjeta de ejercicio 1 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <div class="h-48 bg-gray-200">
-                        <img src="/api/placeholder/400/300" alt="Press de banca" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">Press de Banca</h3>
-                        <p class="text-gray-600">Ejercicio compuesto que trabaja principalmente el pecho mayor, tríceps y hombros anteriores.</p>
-                        <button class="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                            Ver detalles →
-                        </button>
-                    </div>
-                </div>
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <!-- Encabezado de la página -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Tu Rutina Semanal</h1>
+            <p class="text-lg text-gray-600">Programa personalizado para máximos resultados</p>
+        </div>
 
-                <!-- Tarjeta de ejercicio 2 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <div class="h-48 bg-gray-200">
-                        <img src="/api/placeholder/400/300" alt="Aperturas con mancuernas" class="w-full h-full object-cover">
+        <!-- Grid de días -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Lunes -->
+            <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="border-b pb-4 mb-4">
+                        <h2 class="text-2xl font-bold text-indigo-600">Lunes</h2>
+                        <p class="text-lg text-gray-600">Pecho y Tríceps</p>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">Aperturas con Mancuernas</h3>
-                        <p class="text-gray-600">Ejercicio de aislamiento que se centra en el desarrollo y estiramiento del pecho.</p>
-                        <button class="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                            Ver detalles →
-                        </button>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-indigo-100 rounded-lg p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Press de Banca</h3>
+                                <p class="text-sm text-gray-600">4 series x 12 reps</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-indigo-100 rounded-lg p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Press Inclinado</h3>
+                                <p class="text-sm text-gray-600">3 series x 12 reps</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg hover:bg-indigo-100 transition-colors duration-300">
+                        Ver rutina completa
+                    </button>
+                </div>
+            </div>
+
+            <!-- Martes -->
+            <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="border-b pb-4 mb-4">
+                        <h2 class="text-2xl font-bold text-indigo-600">Martes</h2>
+                        <p class="text-lg text-gray-600">Espalda y Bíceps</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-indigo-100 rounded-lg p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Dominadas</h3>
+                                <p class="text-sm text-gray-600">4 series x 10 reps</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-indigo-100 rounded-lg p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Remo con Barra</h3>
+                                <p class="text-sm text-gray-600">3 series x 12 reps</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg hover:bg-indigo-100 transition-colors duration-300">
+                        Ver rutina completa
+                    </button>
+                </div>
+            </div>
+
+            <!-- Miércoles -->
+            <div class="bg-green-50 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="border-b border-green-200 pb-4 mb-4">
+                        <h2 class="text-2xl font-bold text-green-600">Miércoles</h2>
+                        <p class="text-lg text-green-600">Día de Descanso</p>
+                    </div>
+                    <div class="space-y-3 text-green-600">
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Recuperación activa
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Estiramiento suave
+                        </p>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Espalda -->
-        <section class="mb-12">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Espalda</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Tarjeta de ejercicio 1 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <div class="h-48 bg-gray-200">
-                        <img src="/api/placeholder/400/300" alt="Dominadas" class="w-full h-full object-cover">
+            <!-- Jueves -->
+            <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="border-b pb-4 mb-4">
+                        <h2 class="text-2xl font-bold text-indigo-600">Jueves</h2>
+                        <p class="text-lg text-gray-600">Pierna</p>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">Dominadas</h3>
-                        <p class="text-gray-600">Ejercicio compuesto que trabaja la espalda superior y los músculos del core.</p>
-                        <button class="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                            Ver detalles →
-                        </button>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-indigo-100 rounded-lg p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Sentadillas</h3>
+                                <p class="text-sm text-gray-600">4 series x 15 reps</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-indigo-100 rounded-lg p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Peso Muerto</h3>
+                                <p class="text-sm text-gray-600">3 series x 12 reps</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Tarjeta de ejercicio 2 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <div class="h-48 bg-gray-200">
-                        <img src="/api/placeholder/400/300" alt="Remo con barra" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">Remo con Barra</h3>
-                        <p class="text-gray-600">Ejercicio que fortalece los músculos de la espalda media y baja.</p>
-                        <button class="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                            Ver detalles →
-                        </button>
-                    </div>
+                    <button class="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg hover:bg-indigo-100 transition-colors duration-300">
+                        Ver rutina completa
+                    </button>
                 </div>
             </div>
-        </section>
 
-        <!-- Botón "Cargar más" -->
-        <div class="text-center mt-8">
-            <button class="px-6 py-3 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Cargar más ejercicios
+            <!-- Viernes -->
+            <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="border-b pb-4 mb-4">
+                        <h2 class="text-2xl font-bold text-indigo-600">Viernes</h2>
+                        <p class="text-lg text-gray-600">Hombro y Abs</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-indigo-100 rounded-lg p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Press Militar</h3>
+                                <p class="text-sm text-gray-600">4 series x 12 reps</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-indigo-100 rounded-lg p-3">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Plancha</h3>
+                                <p class="text-sm text-gray-600">3 series x 45 seg</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg hover:bg-indigo-100 transition-colors duration-300">
+                        Ver rutina completa
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Progreso -->
+        <div class="mt-12 text-center">
+            <button class="px-8 py-3 bg-indigo-600 text-white rounded-lg shadow-sm hover:bg-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Ver mi progreso
             </button>
         </div>
     </div>
@@ -119,10 +219,9 @@
     <footer class="bg-white mt-12 py-8">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center text-gray-600">
-                <p>© 2024 Valerio Fitness. Todos los derechos reservados.</p>
+                <p>© 2024 Flex Fitness. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
 </body>
-
 </html>
