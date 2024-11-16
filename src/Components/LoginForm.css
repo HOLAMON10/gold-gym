@@ -87,7 +87,7 @@
 /* Right side with background image */
 .right-side {
   flex: 1;
-  background-image: url('/src/images/login.jpg');
+  background-image: url('/public/images/login.jpg');
   background-size: cover;
   background-position: center;
 }

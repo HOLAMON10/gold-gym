@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink,useNavigate  } from 'react-router-dom'; // Usaremos NavLink para la navegación
+import { NavLink, useNavigate } from 'react-router-dom'; // Usaremos NavLink para la navegación
 
 function NavBar() {
     const navigate = useNavigate();  // Para redirigir después de cerrar sesión
@@ -13,15 +13,15 @@ function NavBar() {
         navigate('/login');
     };
     return (
-        <nav className="bg-white shadow-lg">
+        <nav className="bg-[#3D3E3D] shadow-lg">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex justify-between items-center py-4">
-                    <h1 className="text-2xl font-bold text-indigo-600">Valerio Fitness</h1>
+                    <h1 className="text-2xl font-bold text-white">Valerio Fitness</h1>
                     <div className="flex space-x-4">
                         <NavLink
                             to="/componentesMenu/MenuAdmin"
                             className={({ isActive }) =>
-                                isActive ? "text-indigo-600 font-bold" : "text-gray-600 hover:text-indigo-600"
+                                isActive ? "text-white font-bold" : "text-gray-400 hover:text-white"
                             }
                         >
                             Clientes
@@ -29,7 +29,7 @@ function NavBar() {
                         <NavLink
                             to="/componentesMenu/MenuAdmin"
                             className={({ isActive }) =>
-                                isActive ? "text-indigo-600 font-bold" : "text-gray-600 hover:text-indigo-600"
+                                isActive ? "text-white font-bold" : "text-gray-400 hover:text-white"
                             }
                         >
                             Ejercicios
@@ -37,7 +37,7 @@ function NavBar() {
                         <NavLink
                             to="/componentesMenu/MenuAdmin"
                             className={({ isActive }) =>
-                                isActive ? "text-indigo-600 font-bold" : "text-gray-600 hover:text-indigo-600"
+                                isActive ? "text-white font-bold" : "text-gray-400 hover:text-white"
                             }
                         >
                             Alimentacion
@@ -45,7 +45,7 @@ function NavBar() {
                         <NavLink
                             to="/componentesMenu/MenuAdmin"
                             className={({ isActive }) =>
-                                isActive ? "text-indigo-600 font-bold" : "text-gray-600 hover:text-indigo-600"
+                                isActive ? "text-white font-bold" : "text-gray-400 hover:text-white"
                             }
                         >
                             Perfil
@@ -53,7 +53,7 @@ function NavBar() {
                         <NavLink
                             to="/componentesMenu/MenuAdmin"
                             className={({ isActive }) =>
-                                isActive ? "text-indigo-600 font-bold" : "text-gray-600 hover:text-indigo-600"
+                                isActive ? "text-white font-bold" : "text-gray-400 hover:text-white"
                             }
                         >
                             Entrenadores
@@ -61,7 +61,7 @@ function NavBar() {
                         <NavLink
                             to="/componentesMenu/MenuAdmin"
                             className={({ isActive }) =>
-                                isActive ? "text-indigo-600 font-bold" : "text-gray-600 hover:text-indigo-600"
+                                isActive ? "text-white font-bold" : "text-gray-400 hover:text-white"
                             }
                         >
                             Feedback
@@ -69,25 +69,25 @@ function NavBar() {
                         <NavLink
                             to="/componentesMenu/MenuAdmin"
                             className={({ isActive }) =>
-                                isActive ? "text-indigo-600 font-bold" : "text-gray-600 hover:text-indigo-600"
+                                isActive ? "text-white font-bold" : "text-gray-400 hover:text-white"
                             }
                         >
                             Soporte
                         </NavLink>
                         <NavLink
-                            onClick={handleLogout} 
+                            onClick={handleLogout}
                             to="/"
                             className={({ isActive }) =>
-                                isActive ? "text-indigo-600 font-bold" : "text-gray-600 hover:text-indigo-600"
+                                isActive ? "text-white font-bold" : "text-gray-400 hover:text-white"
                             }
                         >
                             Cerrar Session
                         </NavLink>
-
                     </div>
                 </div>
             </div>
         </nav>
+
     );
 };
 
