@@ -95,6 +95,7 @@ input {
   text-decoration: underline;
 }
 
+<<<<<<< HEAD
 #welcome-login{
   font-size: 30px;
   text-align: center;
@@ -105,4 +106,12 @@ input {
   justify-content: center;
   align-items: center;
   text-align: center;
+=======
+/* Right side with background image */
+.right-side {
+  flex: 1;
+  background-image: url('/public/images/login.jpg');
+  background-size: cover;
+  background-position: center;
+>>>>>>> 98c030326202db149b245fb30f0a2a07da7734f5
 }

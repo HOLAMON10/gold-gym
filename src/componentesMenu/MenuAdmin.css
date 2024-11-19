@@ -1,0 +1,171 @@
+
+/* Css para el registro */
+.form-small-container {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  width: 250px;  /* Tamaño reducido de la "cajita" */
+  margin: 0 auto; /* Centra el formulario */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: absolute; /* Permite mover el contenedor a cualquier parte de la página */
+  top: 120px;  /* Ajusta la posición desde el borde superior */
+  left: 80%; /* Ajusta la posición desde el borde izquierdo */
+  background-color: #45a049;
+}
+
+.form-small-container h2 {
+  text-align: center;
+  font-size: 25px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.inputs-Crear {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.inputs-Crear:focus {
+  border-color: #4CAF50;
+  outline: none;
+  box-shadow: 0 0 4px rgba(76, 175, 80, 0.4);
+}
+
+.formCheck {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 10px;
+}
+
+.formCheck div {
+  display: flex;
+  align-items: center;
+}
+
+.formCheck label {
+  margin-left: 5px;
+  font-size: 14px;
+}
+
+.btn-crear-usuario {
+  width: 100%;
+  padding: 8px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.btn-crear-usuario:hover {
+  background-color: #45a049;
+}
+
+
+
+
+/* CSS para las tablas */
+
+
+#menu-admin-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Tabla de personas */
+#menu-admin-container table {
+  width: 70%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombra ligera alrededor de la tabla */
+  border-radius: 8px; /* Bordes redondeados */
+  overflow: hidden; /* Para que los bordes redondeados se vean bien */
+}
+
+#menu-admin-container th, #menu-admin-container td {
+  padding: 12px 10px; /* Espaciado de celdas */
+  text-align: left;
+  border-bottom: 1px solid #ddd;  /* Línea separadora sutil */
+}
+
+/* Estilo de los encabezados de la tabla */
+#menu-admin-container th {
+  background-color: #4CAF50;
+  color: white;
+  text-transform: uppercase; /* Mayúsculas para los encabezados */
+  letter-spacing: 0.5px; /* Espaciado entre letras */
+  font-size: 14px; /* Tamaño de fuente de los encabezados */
+}
+
+/* Estilo de las celdas */
+#menu-admin-container td {
+  background-color: #f9f9f9;  /* Fondo gris claro para las celdas */
+  color: #333;  /* Color de texto oscuro para contraste */
+  font-size: 14px; /* Tamaño de fuente de las celdas */
+}
+
+/* Agregar un estilo al hover de las filas */
+#menu-admin-container tbody tr:hover {
+  background-color: #f1f1f1;  /* Color de fondo claro cuando se pasa el mouse */
+  cursor: pointer;  /* Cambiar cursor */
+}
+
+/* Alternar el color de las filas */
+#menu-admin-container tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Fondo diferente para las filas pares */
+}
+
+#menu-admin-container tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* Fondo diferente para las filas impares */
+}
+
+/* Estilo para los bordes de la tabla */
+#menu-admin-container table th, #menu-admin-container table td {
+  border: none; /* Remover bordes de las celdas para un estilo limpio */
+}
+
+#menu-admin-container table thead {
+  background-color: #2c3e50; /* Color oscuro para el encabezado */
+  color: white;
+}
+
+/* Sombra al pasar el cursor sobre las filas */
+#menu-admin-container tbody tr:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo del contenedor del menú lateral */
+#menu-admin-container .navigation-menu {
+  margin-bottom: 20px;
+}
+
+/* Asegurarse de que el menú no afecte la estructura */
+#menu-admin-container .navigation-menu a {
+  color: #ffffff;
+  padding: 10px;
+  text-decoration: none;
+}
+
+#menu-admin-container .navigation-menu a:hover {
+  background-color: #555;
+}
+
+/* Agregar separación entre celdas */
+#menu-admin-container th, td {
+  border-bottom: 2px solid #ddd;
+}
+
+/* Estilo general para el contenedor del formulario, si decides mostrarlo más tarde */
+#menu-admin-container .form-container {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
