@@ -1,41 +1,131 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import './MenuAdmin.css';
-import FormCrearUsuario from "./FormCrearUsuario";
 import NavigationMenu from "../Components/NavigationMenu";
+import FormCrearUsuario from "./FormCrearUsuario";
+
 
 function MenuAdmin() {
-    
-    
+    const [clientes, setClientes] = useState([]);
+    const [empleados, setEmpleados] = useState([]);
+
+    // Obtener los datos de los clientes
+    useEffect(() => {
+        fetch('http://localhost:5000/verClientes', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);  // Verifica qué datos se reciben
+                if (data && data.data) {
+                    setClientes(data.data);  // Asigna los datos de los clientes
+                } else {
+                    console.log("No se encontró la propiedad 'data' en la respuesta de clientes");
+                }
+            })
+            .catch(error => console.error('Error al obtener datos de clientes:', error));
+    }, []);
+
+    // Obtener los datos de los empleados
+    useEffect(() => {
+        fetch('http://localhost:5000/verEmpleados', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);  // Verifica qué datos se reciben
+                if (data && data.data) {
+                    setEmpleados(data.data);  // Asigna los datos de los empleados
+                } else {
+                    console.log("No se encontró la propiedad 'data' en la respuesta de empleados");
+                }
+            })
+            .catch(error => console.error('Error al obtener datos de empleados:', error));
+    }, []);
+
     return (
-        <div >
-            <NavigationMenu/>
-              
-            
-            <header>
-                <div className="container">
-                    <h1>Flex Fitness</h1>
-
-                    <div className="card-client">
-                        <div className="user-picture">
-                            <svg viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M224 256c70.7 0 128-57.31 128-128s-57.3-128-128-128C153.3 0 96 57.31 96 128S153.3 256 224 256zM274.7 304H173.3C77.61 304 0 381.6 0 477.3c0 19.14 15.52 34.67 34.66 34.67h378.7C432.5 512 448 496.5 448 477.3C448 381.6 370.4 304 274.7 304z"></path>
-                            </svg>
-                        </div>
-                        <p className="name-client"> Jhon Doe
-                            <span>Admin</span>
-                        </p>
-                    </div>
-                </div>
-            </header>
-            <hr />
-
-            <FormCrearUsuario/>
-
+        <div id="menu-admin-container">
+            <NavigationMenu />
             <br />
-           
+            <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Clientes</h2>
+
+            <table id="clientes">
+                <thead>
+                    <tr>
+                        
+                        <th>Nombre</th>
+                        <th>Cédula</th>
+                        <th>Tipo Usuario</th>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Edad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {clientes.length > 0 ? (
+                        clientes.map(cliente => (
+                            <tr key={cliente.id}>
+                               
+                                <td>{cliente.nombre}</td>
+                                <td>{cliente.cedula}</td>
+                                <td>{cliente.rol}</td>
+                                <td>{cliente.usuario}</td>
+                                <td>{cliente.correo}</td>
+                                <td>{cliente.edad}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="7">No hay clientes disponibles</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+            <br />
+            <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Empleados</h2>
+            <table id="empleados">
+                <thead>
+                    <tr>
+                        
+                        <th>Nombre</th>
+                        <th>Cédula</th>
+                        <th>Tipo Usuario</th>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Edad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {empleados.length > 0 ? (
+                        empleados.map(empleado => (
+                            <tr key={empleado.id}>
+                                
+                                <td>{empleado.nombre}</td>
+                                <td>{empleado.cedula}</td>
+                                <td>{empleado.rol}</td>
+                                <td>{empleado.usuario}</td>
+                                <td>{empleado.correo}</td>
+                                <td>{empleado.edad}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="7">No hay empleados disponibles</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+            <br/>
+            <FormCrearUsuario/>
+            
+
+            
         </div>
-
-
     );
 }
 

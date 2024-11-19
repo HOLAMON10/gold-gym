@@ -49,25 +49,21 @@ function FormCrearUsuario() {
     };
 
     return (
-        <div>
+        <div className="form-small-container">
+            <h2>Registrar Usuario</h2>
             <input
                 type="text"
                 id="nombreRegistro"
                 placeholder="Ingresa nombre"
-                className="inputs-Crear"  
+                className="inputs-Crear"
             />
-
-            <br />
-            <br />
 
             <input
                 type="number"
                 id="cedulaRegistro"
-                placeholder="Ingrese Cedula"
-                className="inputs-Crear"  
+                placeholder="Ingrese Cédula"
+                className="inputs-Crear"
             />
-            <br />
-            <br />
 
             <form className="formCheck">
                 <div>
@@ -80,51 +76,39 @@ function FormCrearUsuario() {
                     <label htmlFor="checkC">Cliente</label>
                 </div>
             </form>
-            <br />
 
             <input
                 type="text"
                 id="registroUsuario"
                 placeholder="Ingrese Usuario"
-                className="inputs-Crear"  
+                className="inputs-Crear"
             />
-            <br />
-            <br />
 
             <input
-                type="text"
+                type="password"
                 id="contra"
-                placeholder="Ingrese password"
-                className="inputs-Crear"  
+                placeholder="Ingrese Contraseña"
+                className="inputs-Crear"
             />
-            <br />
-            <br />
 
             <input
-                type="text"
+                type="email"
                 id="correo"
-                placeholder="Ingrese correo"
-                className="inputs-Crear"  
+                placeholder="Ingrese Correo"
+                className="inputs-Crear"
             />
-            <br />
-            <br />
 
             <input
                 type="number"
                 id="edad"
-                placeholder="Ingrese edad"
-                className="inputs-Crear"  
+                placeholder="Ingrese Edad"
+                className="inputs-Crear"
             />
-            <br />
-            <br />
 
-            <button onClick={Agregarclic}>Agregar Usuario</button>
-
-            <div>
-                {/* Aquí puedes agregar más contenido si lo deseas */}
-            </div>
+            <button onClick={Agregarclic} className="btn-crear-usuario">Agregar Usuario</button>
         </div>
     );
 }
+
 
 export default FormCrearUsuario;
