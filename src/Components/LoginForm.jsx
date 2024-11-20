@@ -51,7 +51,9 @@ function Login() {
     return (
         <div className="wrapper">
             <div className="left-side">
+            <h2 className="info-text">Track your workouts, and manage your fitness goals—all in one place.</h2>
                 <div className="form-container">
+                
                     <form onSubmit={handleLogin}>
                         <h1 className="title">Welcome to Gyms</h1>
                         <div>
@@ -80,10 +82,11 @@ function Login() {
                     </form>
                     <p>{message}</p>
                 </div>
+                
             </div>
 
             <div className="right-side">
-                {/* Right side with background image */}
+               
             </div>
         </div>
     );
