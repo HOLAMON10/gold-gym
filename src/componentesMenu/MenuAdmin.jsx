@@ -49,15 +49,14 @@ function MenuAdmin() {
     }, []);
 
     return (
-        <div id="menu-admin-container">
+        <div>
             <NavigationMenu />
+        <div id="menu-admin-container">
             <br />
             <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Clientes</h2>
-
             <table id="clientes">
                 <thead>
                     <tr>
-                        
                         <th>Nombre</th>
                         <th>Cédula</th>
                         <th>Tipo Usuario</th>
@@ -125,6 +124,7 @@ function MenuAdmin() {
             
 
             
+        </div>
         </div>
     );
 }
