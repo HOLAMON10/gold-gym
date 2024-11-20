@@ -1,8 +1,5 @@
 # backend/app.py
-from flask import Flask, request, jsonify,session, Blueprint
-import json
-from werkzeug.utils import secure_filename
-import os
+from flask import Flask, request, jsonify,render_template,session,redirect,url_for
 from flask_cors import CORS
 from flask_session import Session
 from ConexionDB.database import get_db_connection
@@ -383,12 +380,121 @@ def verRecoAlimen():
 
 
 
-
 # Acaba ver Tablas --------------------------------------------------------------------------------
 
 
 
 
+
+
+# CRUD Tablas --------------------------------------------------------------------------------
+
+@app.route('/api/eliminarEjercicio/<int:id>', methods=['DELETE'])
+def eliminarEjercicio(id):
+    print(f"Intentando eliminar el ejercicio con id: {id}")  # Para verificar que se pasa el id
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
+        cursor.execute('DELETE FROM ejercicio WHERE idEjercicio = %s', (id,))
+
+        # Verificar si se eliminó algún registro
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Ejercicio no encontrado"}), 404
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"Ejercicio con id {id} eliminado exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el ejercicio: {e}")
+        return jsonify({"error": "Hubo  un problema al eliminar el ejercicio"}), 500
+
+
+
+
+
+
+
+@app.route('/api/eliminarRecoAlimen/<int:id>', methods=['DELETE'])
+def eliminarRecoAlimen(id):
+    print(f"Intentando eliminar el RecoAlimen con id: {id}")  # Para verificar que se pasa el id
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
+        cursor.execute('DELETE FROM recomendacionai WHERE idRA = %s', (id,))
+
+        # Verificar si se eliminó algún registro
+        if cursor.rowcount == 0:
+            return jsonify({"error": "RecoAlimen no encontrado"}), 404
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"RecoAlimen con id {id} RecoAlimen exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el RecoAlimen: {e}")
+        return jsonify({"error": "Hubo  un problema al eliminar el RecoAlimen"}), 500
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/api/eliminarUsuario/<int:id>', methods=['DELETE'])
+def eliminarUsuario(id):
+    print(f"Intentando eliminar Persona con id: {id}")  # Para verificar que se pasa el id
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
+        cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
+
+        # Verificar si se eliminó algún registro
+        if cursor.rowcount == 0:
+            return jsonify({"error": "id no encontrado"}), 404
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"id con id {id} id exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el id: {e}")
+        return jsonify({"error": "Hubo  un problema al eliminar el id"}), 500
+
+
+
+
+
+# --------------------------------------------------------------------------------
 
 
 
@@ -398,81 +504,13 @@ def logout():
     return jsonify({'message': 'Logged out successfully'}), 200
 
 
-upload_bp = Blueprint('upload', __name__)
-
-# Configure upload folder and allowed extensions
-UPLOAD_FOLDER = './gold-gym/public/images'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def process_and_save_image(file):
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-
-    # Save the file to the filesystem
-    file.save(filepath)
-
-    return filepath, filename
-
-@app.route('/api/food', methods=['POST'])
-def manage_food():
-    # Retrieve the food object and file
-    food_json = request.form.get('food')
-    file = request.files.get('file')
-
-    if not food_json or not file:
-        return jsonify({'error': 'Food details or file missing'}), 400
-
-    # Validate file type
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'Invalid file type'}), 400
-
-    # Process and save the file
-    filepath, filename = process_and_save_image(file)
-
-    # Parse and validate the food object
-    try:
-        food = json.loads(food_json)
-    except Exception:
-        return jsonify({'error': 'Invalid food object'}), 400
-
-    name = food.get('name')
-    description = food.get('description')
-
-    if not name or not description:
-        return jsonify({'error': 'Food name and description are required'}), 400
-
-    # Update the database
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    try:
-        cursor.execute(
-            """
-            INSERT INTO foods (name.....)
-            VALUES (%s, %s, %s,.....)
-            ON DUPLICATE KEY UPDATE
-            food_image_path = VALUES(food_image_path)
-            """,
-            (name, description, filepath) # cambiar por aquello que traiga el renponse.
-        )
-        connection.commit()
-    except Exception as e:
-        connection.rollback()
-        return jsonify({'error': str(e)}), 500
-    finally:
-        cursor.close()
-        connection.close()
-
-    return jsonify({'message': 'Food added/updated successfully', 'filename': filename}), 200
-
 if __name__ == '__main__':
     app.run(debug=True)
 
 
-    #no poner nada debajo de esto sino no funciona
+# --------------------------------------------------------------------------------
+
+ #no poner nada debajo de esto sino no funciona
 
 
 

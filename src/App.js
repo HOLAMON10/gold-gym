@@ -4,6 +4,7 @@ import Login from './Components/LoginForm';
 import PrivateRoute from "./Components/PrivateRoute";
 import MenuEjercicioAdmin from './componentesMenu/MenuEjercicioAdmin'
 import MenuRecoAlimenAdmin from "./componentesMenu/MenuRecoAlimenAdmin";
+import MenuAdminEmpleado from "./componentesMenu/MenuAdminEmpleado";
 
 function App() {
 
@@ -38,6 +39,14 @@ function App() {
           element={
             <PrivateRoute>
               <MenuRecoAlimenAdmin />
+            </PrivateRoute>
+          }
+        />
+         <Route
+          path="/componentesMenu/MenuAdminEmpleado"
+          element={
+            <PrivateRoute>
+              <MenuAdminEmpleado/>
             </PrivateRoute>
           }
         />

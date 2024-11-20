@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './MenuAdmin.css';
 import NavigationMenu from "../Components/NavigationMenu";
-import FormCrearRecoAlimen from './FormCrearRecoAlimen';
+import FormCrearUsuario from "./FormCrearUsuario";
 
-function MenuRecoAlimenAdmin() {
-    const [RecoAlimen, setRecoAlimen] = useState([]);
+function MenuAdminEmpleado() {
+    const [empleados, setEmpleados] = useState([]);
 
-    // Obtener los datos de los Recomendaciones Alimenticias
+    // Obtener los datos de los empleados
     useEffect(() => {
-        fetch('http://localhost:5000/verRecoAlimen', {
+        fetch('http://localhost:5000/verEmpleados', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -18,67 +18,63 @@ function MenuRecoAlimenAdmin() {
             .then(data => {
                 console.log(data);  // Verifica qué datos se reciben
                 if (data && data.data) {
-                    setRecoAlimen(data.data);  // Asigna los datos de las recomendaciones alimenticias
+                    setEmpleados(data.data);  // Asigna los datos de los empleados
                 } else {
-                    console.log("No se encontró la propiedad 'data' en la respuesta de recomendaciones alimenticias");
+                    console.log("No se encontró la propiedad 'data' en la respuesta de empleados");
                 }
             })
-            .catch(error => console.error('Error al obtener datos de recomendaciones alimenticias:', error));
+            .catch(error => console.error('Error al obtener datos de empleados:', error));
     }, []);
 
-
-
-    // Función para eliminar recomendación alimenticia
-    const handleEliminarRecoAlimen = (id) => {
-        fetch(`http://localhost:5000/api/eliminarRecoAlimen/${id}`, {
+    const handleEliminarUsuario = (id) => {
+        fetch(`http://localhost:5000/api/eliminarUsuario/${id}`, {
             method: 'DELETE',
         })
             .then(response => response.json())
             .then(data => {
                 if (data.message) {
                     alert(data.message); // Mensaje de éxito
-                    // Actualizar el estado de las recomendaciones alimenticias
-                    setRecoAlimen(prevRecoAlimen => prevRecoAlimen.filter(item => item.id !== id));
+                    // Actualizar el estado de los empleados
+                    setEmpleados(prevEmpleados => prevEmpleados.filter(item => item.id !== id));
                 } else {
                     alert(data.error); // Mensaje de error
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Hubo un error al eliminar la recomendación alimenticia');
+                alert('Hubo un error al eliminar el empleado');
             });
     };
-
-    
 
     return (
         <div>
             <NavigationMenu />
-
             <div id="menu-admin-container">
-
-                <br />
-                <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Recomendación Alimenticia</h2>
-
-                <table id="RecoAlimen">
+                <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Empleados</h2>
+                <table id="empleados">
                     <thead>
                         <tr>
-                            <th>Objetivo</th>
-                            <th>Calorías</th>
-                            <th>Proteína</th>
-                            <th>Carbohidratos</th>
+                            <th>Nombre</th>
+                            <th>Cédula</th>
+                            <th>Tipo Usuario</th>
+                            <th>Usuario</th>
+                            <th>Correo</th>
+                            <th>Edad</th>
                             <th></th>
                             <th></th>
+                           
                         </tr>
                     </thead>
                     <tbody>
-                        {RecoAlimen.length > 0 ? (
-                            RecoAlimen.map(reco => (
-                                <tr key={reco.id}>
-                                    <td>{reco.objetivo}</td>
-                                    <td>{reco.calorias}</td>
-                                    <td>{reco.proteina}</td>
-                                    <td>{reco.carbo}</td>
+                        {empleados.length > 0 ? (
+                            empleados.map(empleado => (
+                                <tr key={empleado.id}>
+                                    <td>{empleado.nombre}</td>
+                                    <td>{empleado.cedula}</td>
+                                    <td>{empleado.rol}</td>
+                                    <td>{empleado.usuario}</td>
+                                    <td>{empleado.correo}</td>
+                                    <td>{empleado.edad}</td>
                                     <td>
                                         <button
                                             style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
@@ -89,7 +85,7 @@ function MenuRecoAlimenAdmin() {
                                     <td>
                                         <button
                                             style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
-                                            onClick={() => handleEliminarRecoAlimen(reco.id)} // Llamada a la función de eliminación
+                                            onClick={() => handleEliminarUsuario(empleado.id)} // Llamada a la función de eliminación
                                         >
                                             Eliminar
                                         </button>
@@ -98,18 +94,16 @@ function MenuRecoAlimenAdmin() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="7">No hay recomendaciones alimenticias</td>
+                                <td colSpan="7">No hay empleados disponibles</td>
                             </tr>
                         )}
                     </tbody>
                 </table>
-
                 <br />
-                <FormCrearRecoAlimen />
-
+                <FormCrearUsuario />
             </div>
         </div>
     );
 }
 
-export default MenuRecoAlimenAdmin;
+export default MenuAdminEmpleado;
