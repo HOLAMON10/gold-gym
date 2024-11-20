@@ -10,14 +10,36 @@ function App() {
   return (
 
     <Router>
+      
       <Routes>
+      
         {/* Public route for the login page */}
         <Route path="/" element={<Login />} />
 
         {/* Private route for MenuAdmin page, only accessible if authenticated */}
         <Route
           path="/componentesMenu/MenuAdmin"
-          element={<PrivateRoute element={MenuAdmin} />}
+          element={
+            <PrivateRoute>
+              <MenuAdmin />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/componentesMenu/MenuEjercicioAdmin"
+          element={
+            <PrivateRoute>
+              <MenuEjercicioAdmin />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/componentesMenu/MenuRecoAlimenAdmin"
+          element={
+            <PrivateRoute>
+              <MenuRecoAlimenAdmin />
+            </PrivateRoute>
+          }
         />
       </Routes>
     </Router>
