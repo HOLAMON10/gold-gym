@@ -11,6 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   padding: 4rem; /* Add padding to create space around the form */
 }
 
@@ -40,10 +41,14 @@
   width: 100%;
   padding: 0.8rem;
   margin-bottom: 1.5rem;
-  border-radius: 4px;
+  border-radius: 20px;
   border: 1px solid #333; /* Dark border for subtle definition */
   background-color: #f9f9f9;
   color: #000;
+  transition: box-shadow 0.1s ease;
+}
+.input:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow on hover */
 }
 
 .input::placeholder {
@@ -55,7 +60,7 @@
   width: 100%;
   padding: 0.8rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
   background-color: #333; /* Dark grey for contrast */
   color: #fff;
   font-size: 1rem;
@@ -63,8 +68,10 @@
   transition: background-color 0.3s;
 }
 
+
 .form-btn:hover {
   background-color: #000; /* Darker hover effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Forgot Password text - aligned to the right */
@@ -86,8 +93,23 @@
 
 /* Right side with background image */
 .right-side {
-  flex: 1;
+  flex: 1.1;
   background-image: url('/public/images/login.jpg');
   background-size: cover;
   background-position: center;
+}
+.info-text {
+  color: #ffffff; /* White text */
+  font-weight: 500; /* Medium weight for subtle elegance */
+  font-size: 26px; /* Slightly larger font size for better visibility */
+  line-height: 1.4; /* Line height for better readability */
+  text-align: center; /* Center the text */
+  margin-bottom: 2rem; /* Space between the text and form */
+  letter-spacing: 1px; /* Slight letter spacing for a refined look */
+  font-family: 'Lora', serif; /* Elegant serif font for a classy feel */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+  transition: color 0.3s ease; /* Transition effect on hover for interactivity */
+}
+.info-text:hover {
+  color: #ffd700; /* Gold color on hover for a premium feel */
 }
