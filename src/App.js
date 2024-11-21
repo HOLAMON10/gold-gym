@@ -4,6 +4,8 @@ import Login from './Components/LoginForm';
 import PrivateRoute from "./Components/PrivateRoute";
 import MenuEjercicioAdmin from './componentesMenu/MenuEjercicioAdmin'
 import MenuRecoAlimenAdmin from "./componentesMenu/MenuRecoAlimenAdmin";
+import NutritionGuide from "./componentesMenu/DietaClient";
+import Dashboard from "./componentesMenu/MenuPrincipalCliente";
 
 function App() {
 
@@ -38,6 +40,22 @@ function App() {
           element={
             <PrivateRoute>
               <MenuRecoAlimenAdmin />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/componentesMenu/DietaClient"
+          element={
+            <PrivateRoute>
+              <NutritionGuide />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/componentesMenu/MenuPrincipalCliente"
+          element={
+            <PrivateRoute>
+              <Dashboard/>
             </PrivateRoute>
           }
         />

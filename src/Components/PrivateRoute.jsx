@@ -20,7 +20,7 @@ function PrivateRoute({ allowedRoles, children } ) {
     const RoleAccess = {
         "Admin": ["/componentesMenu/MenuAdmin", "/"],
         "Empleado": ["/componentesMenu/MenuAdmin", "/componentesMenu/MenuRecoAlimenAdmin", "/componentesMenu/MenuEjercicioAdmin"],
-        "Client": ["/"]
+        "Cliente": ["/componentesMenu/DietaClient","/componentesMenu/MenuPrincipalCliente"]
     };
     const allowedPathsForRole = RoleAccess[userRole];
    

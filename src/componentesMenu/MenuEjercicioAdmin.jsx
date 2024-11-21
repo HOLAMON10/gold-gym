@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './MenuAdmin.css';
-import NavigationMenu from "../Components/NavigationMenu";
+import NavigationMenu from "../Components/NavigationMenuEmpAdmin";
 import FormCrearEjercicio from "./FormCrearEjercicio";
 
 

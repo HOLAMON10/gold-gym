@@ -29,7 +29,7 @@ function Login() {
                 sessionStorage.setItem("username", response.data.username);
 
                 if (response.data.role === 'Cliente') {
-                    window.location.href = "/pantallaclientes/menucliente.html";
+                    navigate("componentesMenu/MenuPrincipalCliente");
                 }
                 else if (response.data.role === 'Empleado') {
                     navigate('componentesMenu/MenuAdmin')
