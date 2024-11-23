@@ -109,6 +109,127 @@ def agregarRecoAlimen():
 
 
 
+
+# Editar Registros  --------------------------------------------------------
+
+@app.route('/api/actualizarEjercicio/<int:id>', methods=['PATCH'])
+def actualizarEjercicio(id):
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Verificar si el ejercicio existe
+        cursor.execute('SELECT idRutina FROM ejercicio WHERE idEjercicio = %s', (id,))
+        ejercicio_actual = cursor.fetchone()
+
+        if not ejercicio_actual:
+            return jsonify({"error": "Ejercicio no encontrado"}), 404
+
+        # Obtener los datos del cuerpo de la solicitud
+        data = request.json
+        nombreEjer = data.get('nombreEjer')
+        repeticiones = data.get('repeticiones')
+        levantamientos = data.get('levantamientos')
+
+        # Actualizar el ejercicio, sin cambiar idRutina
+        cursor.execute('''
+            UPDATE ejercicio
+            SET nombreEjer = %s, repeticiones = %s, levantamientos = %s
+            WHERE idEjercicio = %s
+        ''', (nombreEjer, repeticiones, levantamientos, id))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": "Ejercicio actualizado correctamente"}), 200
+
+    except Exception as e:
+        print(f"Error al actualizar el ejercicio: {e}")
+        return jsonify({"error": "Hubo un problema al actualizar el ejercicio"}), 500
+
+
+
+
+@app.route('/api/actualizarRecoAlimen/<int:id>', methods=['PATCH'])
+def actualizarRecoAlimen(id):
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Obtener los datos del cuerpo de la solicitud
+        data = request.json
+        objetivio = data.get('objetivio')
+        calorias = data.get('calorias')
+        proteina = data.get('proteina')
+        carbo = data.get('carbo')
+
+        # Actualizar el reco alimenticia sin cambiar idRA
+        cursor.execute('''
+            UPDATE recomendacionai
+
+            SET objetivo = %s, calorias = %s, proteina = %s, carbo = %s
+            WHERE idRA = %s
+        ''', (objetivio, calorias, proteina, carbo, id))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": "Recomendacion alimenticia actualizada correctamente"}), 200
+
+    except Exception as e:
+        print(f"Error al actualizar la recomendación alimenticia: {e}")
+        return jsonify({"error": "Hubo un problema al actualizar la recomendación alimenticia"}), 500
+
+
+
+
+
+
+
+
+@app.route('/api/actualizarUsuario/<int:id>', methods=['PATCH'])
+def actualizarUsuario(id):
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Obtener los datos del cuerpo de la solicitud
+        data = request.json
+        nombre = data.get('nombre')
+        cedula = data.get('cedula')
+        
+        usuario = data.get('usuario')
+        correo = data.get('correo')
+        edad = data.get('edad')
+        
+        # Actualizar el reco alimenticia sin cambiar idRA
+        cursor.execute('''
+            UPDATE persona
+
+            SET nombre = %s, cedula = %s,  usuario = %s,  correo = %s, edad = %s
+            WHERE id = %s
+        ''', (nombre, cedula, usuario,correo,edad, id))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": "Usuario actualizada correctamente"}), 200
+
+    except Exception as e:
+        print(f"Error al actualizar la usuario: {e}")
+        return jsonify({"error": "Hubo un problema al actualizar la usuario"}), 500
+
+
+
+
+
+
 #Login --------------------------------------------------------------------------------
 
 @app.route('/login', methods=['POST'])

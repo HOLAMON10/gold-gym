@@ -5,6 +5,14 @@ import FormCrearRecoAlimen from './FormCrearRecoAlimen';
 
 function MenuRecoAlimenAdmin() {
     const [RecoAlimen, setRecoAlimen] = useState([]);
+    const [showEditPopup, setShowEditPopup] = useState(false);  // Controlar si mostrar o no la ventana emergente
+    const [SelectedRecoAlimen, setSelectedRecoAlimen] = useState(null);  // Guardar el ejercicio seleccionado para editar
+    const [objetivo, setObjetivo] = useState('');
+    const [calorias, setCalorias] = useState('');
+    const [proteina, setProteina] = useState('');
+    const [carbo, setCarbo] = useState('');
+
+
 
     // Obtener los datos de los Recomendaciones Alimenticias
     useEffect(() => {
@@ -49,7 +57,63 @@ function MenuRecoAlimenAdmin() {
             });
     };
 
-    
+
+
+
+    // Función para abrir el popup y cargar los datos del ejercicio seleccionado
+    const handleEditarRecoAlimen = (reco) => {
+        setSelectedRecoAlimen(reco);
+        setObjetivo(reco.objetivo);  // Cargar los datos actuales del ejercicio
+        setCalorias(reco.calorias);
+        setProteina(reco.proteina);
+        setCarbo(reco.carbo);
+        setShowEditPopup(true);  // Mostrar la ventana emergente
+    };
+
+
+
+    // Función para cerrar el popup
+    const handleClosePopup = () => {
+        setShowEditPopup(false);
+        setSelectedRecoAlimen(null);
+    };
+
+
+    // Función para enviar las actualizaciones al servidor
+    const handleActualizarRecoAlimen = () => {
+        fetch(`http://localhost:5000/api/actualizarRecoAlimen/${SelectedRecoAlimen.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                objetivo,
+                calorias,
+                proteina,
+                carbo
+
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Recomendacion actualizado correctamente');
+                    setShowEditPopup(false);  // Cerrar el popup
+                    // Actualizar la tabla de ejercicios con los nuevos datos
+                    setRecoAlimen(prevRecoAlimen => prevRecoAlimen.map(ej => ej.id === SelectedRecoAlimen.id ? { ...ej, objetivo: objetivo, calorias, proteina, carbo } : ej));
+
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar el ejercicio:', error);
+                alert('Hubo un error al actualizar el ejercicio');
+            });
+    };
+
+
+
 
     return (
         <div>
@@ -82,6 +146,7 @@ function MenuRecoAlimenAdmin() {
                                     <td>
                                         <button
                                             style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
+                                            onClick={() => handleEditarRecoAlimen(reco)}
                                         >
                                             Editar
                                         </button>
@@ -106,6 +171,65 @@ function MenuRecoAlimenAdmin() {
 
                 <br />
                 <FormCrearRecoAlimen />
+
+                {/* Ventana emergente de edición */}
+                {showEditPopup && (
+                    <div className="popup-overlay">
+                        <div className="popup-container">
+                            <h3>Editar Recomendacion</h3>
+                            <div>
+                                <label htmlFor="objetivo">Objetivo</label>
+                                <input
+                                    type="text"
+                                    id="objetivo"
+                                    value={objetivo}
+                                    onChange={(e) => setObjetivo(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="calorias">Calorias</label>
+                                <input
+                                    type="text"
+                                    id="calorias"
+                                    value={calorias}
+                                    onChange={(e) => setCalorias(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="proteina">Proteina</label>
+                                <input
+                                    type="text"
+                                    id="proteina"
+                                    value={proteina}
+                                    onChange={(e) => setProteina(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="carbo">Carbohidratos</label>
+                                <input
+                                    type="text"
+                                    id="carbo"
+                                    value={carbo}
+                                    onChange={(e) => setCarbo(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <button
+                                    className="popup-button update"
+                                    onClick={handleActualizarRecoAlimen}
+                                >
+                                    Actualizar
+                                </button>
+                                <button
+                                    className="popup-button cancel"
+                                    onClick={handleClosePopup}
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>
