@@ -10,6 +10,8 @@ function PrivateRoute({ allowedRoles, children } ) {
     console.log("Current Path:", location.pathname);
     console.log("Is Authenticated:", isAuthenticated);
     console.log("User Role:", userRole);
+    console.log("id", sessionStorage.getItem('id'))
+    
     
     if (!isAuthenticated) {
         console.log("User not authenticated, redirecting to login");
@@ -20,16 +22,11 @@ function PrivateRoute({ allowedRoles, children } ) {
     const RoleAccess = {
         "Admin": ["/componentesMenu/MenuAdmin", "/"],
         "Empleado": ["/componentesMenu/MenuAdmin", "/componentesMenu/MenuRecoAlimenAdmin", "/componentesMenu/MenuEjercicioAdmin"],
-        "Cliente": ["/componentesMenu/DietaClient","/componentesMenu/MenuPrincipalCliente"]
+        "Cliente": ["/componentesMenu/DietaClient","/componentesMenu/MenuPrincipalCliente","/componentesMenu/PerfilUsuarioCliente"]
     };
     const allowedPathsForRole = RoleAccess[userRole];
    
-    console.log(RoleAccess);
-    console.log(typeof(RoleAccess))
-    for (let role in RoleAccess) {
-        console.log('Role:', role);
-        console.log('Allowed Paths:', RoleAccess[role]);
-    }
+    
    
     // If the role is not in RoleAccess or doesn't have access to the current path, redirect
     if (!allowedPathsForRole || !allowedPathsForRole.includes(location.pathname)) {

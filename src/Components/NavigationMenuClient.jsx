@@ -54,6 +54,18 @@ function NavBarClient() {
                                 Alimentacion
                             </NavLink>
                         </PrivateRoute>
+                        <PrivateRoute>
+                            <NavLink
+                                to="/componentesMenu/PerfilUsuarioCliente"
+                                className={({ isActive }) =>
+                                    isActive ? "text-white font-semibold border-b-2 border-teal-400"
+                : "text-gray-300 hover:text-teal-400 hover: transition duration-300 ease-in-out"
+                                }
+                            >
+                                Perfil
+                            </NavLink>
+                        </PrivateRoute>
+
 
                         
                         <NavLink

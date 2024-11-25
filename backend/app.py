@@ -1,5 +1,5 @@
 # backend/app.py
-from flask import Flask, request, jsonify,session, Blueprint
+from flask import Flask, request, jsonify,session, Blueprint,send_from_directory
 import json
 from werkzeug.utils import secure_filename
 import os
@@ -124,18 +124,21 @@ def login():
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM persona WHERE usuario = %s AND contra = %s', (username, password))
+    
     record = cursor.fetchone()
+    print(record)
 
     if record:
         # If successful, create session and return success response
         session['loggedin'] = True
         session['username'] = record[5]
         session['role'] = record[3]   # Assuming record[5] contains the username
-        print(record[3])
+        session['id'] = record[0]
         response = {
             'message': 'Login successful',
             'username': session['username'],
             'role': session['role'],
+            'id': session['id'],
             'loggedin': True
         }
         connection.close()
@@ -467,6 +470,104 @@ def manage_food():
         connection.close()
 
     return jsonify({'message': 'Food added/updated successfully', 'filename': filename}), 200
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+# Define the upload folder path
+PUBLIC_IMAGES_FOLDER = os.path.join(BASE_DIR, 'public', 'images')
+
+
+@app.route('/api/upload', methods=['POST'])
+def upload_profile():
+    try:
+        # Get user data from the form
+        user_id = request.form.get("userId")
+        nombre = request.form.get("nombre")
+        usuario = request.form.get("usuario")
+        correo = request.form.get("correo")
+        edad = request.form.get("edad")
+
+        if not user_id:
+            return jsonify({"error": "User ID is required"}), 400
+
+        # Connect to the database
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Check if the user exists
+        cursor.execute("SELECT * FROM persona WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Update user data in the database
+        update_query = """
+            UPDATE persona
+            SET nombre = %s, usuario = %s, correo = %s, edad = %s
+            WHERE id = %s
+        """
+        cursor.execute(update_query, (nombre, usuario, correo, edad, user_id))
+
+        # Handle the file upload
+        if 'file' in request.files:
+            file = request.files['file']
+            if file:
+                # Secure the filename and save to public/images
+                filename = file.filename
+                print(file)
+                filepath = os.path.join(PUBLIC_IMAGES_FOLDER ,filename)
+                file.save(filepath)
+
+                # Store the relative path (e.g., "images/filename.jpg")
+                relative_path = os.path.relpath(filepath )
+
+                # Update profile_image in the database
+                cursor.execute(
+                    "UPDATE persona SET persona_imagen = %s WHERE id = %s",
+                    (filename, user_id)
+                )
+
+        # Commit the changes
+        conn.commit()
+
+        # Fetch the updated user data
+        cursor.execute("SELECT * FROM persona WHERE id = %s", (user_id,))
+        updated_user = cursor.fetchone()
+
+        return jsonify({"message": "Profile updated successfully", "user": updated_user}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "An error occurred while updating the profile"}), 500
+
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+
+@app.route('/api/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    # Get rows as dictionaries
+    cursor.execute("SELECT nombre,usuario,correo,edad, persona_imagen FROM persona WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+    
+    cursor.close()
+    connection.close()
+
+    if user:
+        print(user)
+        return jsonify(user)
+    else:
+        print(f"User with ID {user_id} not found.")
+        return jsonify({"error": "User not found"}), 404
+    
+@app.route('/images/<path:filename>')
+def serve_images(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     app.run(debug=True)

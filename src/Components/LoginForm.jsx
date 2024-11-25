@@ -27,11 +27,13 @@ function Login() {
                 sessionStorage.setItem("isLoggedIn", true);
                 sessionStorage.setItem("role", response.data.role);
                 sessionStorage.setItem("username", response.data.username);
+                sessionStorage.setItem("id", response.data.id)
+               
 
                 if (response.data.role === 'Cliente') {
                     navigate("componentesMenu/MenuPrincipalCliente");
                 }
-                else if (response.data.role === 'Empleado') {
+                else if (response.data.role === 'Empleado' & response.data.id) {
                     navigate('componentesMenu/MenuAdmin')
                 }
             } else {
