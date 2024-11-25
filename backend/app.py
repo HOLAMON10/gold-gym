@@ -1,5 +1,5 @@
 # backend/app.py
-from flask import Flask, request, jsonify,session, Blueprint,send_from_directory
+from flask import Flask, request, jsonify,render_template,session,redirect,url_for,Blueprint,send_from_directory
 import json
 from werkzeug.utils import secure_filename
 import os
@@ -106,6 +106,127 @@ def agregarRecoAlimen():
     connection.close()
 
     return jsonify({"message": "Recomendacion Alimenticia  registrado  exitosamente"}), 201
+
+
+
+
+
+
+
+# Editar Registros  --------------------------------------------------------
+
+@app.route('/api/actualizarEjercicio/<int:id>', methods=['PATCH'])
+def actualizarEjercicio(id):
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Verificar si el ejercicio existe
+        cursor.execute('SELECT idRutina FROM ejercicio WHERE idEjercicio = %s', (id,))
+        ejercicio_actual = cursor.fetchone()
+
+        if not ejercicio_actual:
+            return jsonify({"error": "Ejercicio no encontrado"}), 404
+
+        # Obtener los datos del cuerpo de la solicitud
+        data = request.json
+        nombreEjer = data.get('nombreEjer')
+        repeticiones = data.get('repeticiones')
+        levantamientos = data.get('levantamientos')
+
+        # Actualizar el ejercicio, sin cambiar idRutina
+        cursor.execute('''
+            UPDATE ejercicio
+            SET nombreEjer = %s, repeticiones = %s, levantamientos = %s
+            WHERE idEjercicio = %s
+        ''', (nombreEjer, repeticiones, levantamientos, id))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": "Ejercicio actualizado correctamente"}), 200
+
+    except Exception as e:
+        print(f"Error al actualizar el ejercicio: {e}")
+        return jsonify({"error": "Hubo un problema al actualizar el ejercicio"}), 500
+
+
+
+
+@app.route('/api/actualizarRecoAlimen/<int:id>', methods=['PATCH'])
+def actualizarRecoAlimen(id):
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Obtener los datos del cuerpo de la solicitud
+        data = request.json
+        objetivio = data.get('objetivio')
+        calorias = data.get('calorias')
+        proteina = data.get('proteina')
+        carbo = data.get('carbo')
+
+        # Actualizar el reco alimenticia sin cambiar idRA
+        cursor.execute('''
+            UPDATE recomendacionai
+
+            SET objetivo = %s, calorias = %s, proteina = %s, carbo = %s
+            WHERE idRA = %s
+        ''', (objetivio, calorias, proteina, carbo, id))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": "Recomendacion alimenticia actualizada correctamente"}), 200
+
+    except Exception as e:
+        print(f"Error al actualizar la recomendación alimenticia: {e}")
+        return jsonify({"error": "Hubo un problema al actualizar la recomendación alimenticia"}), 500
+
+
+
+
+
+
+
+
+@app.route('/api/actualizarUsuario/<int:id>', methods=['PATCH'])
+def actualizarUsuario(id):
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Obtener los datos del cuerpo de la solicitud
+        data = request.json
+        nombre = data.get('nombre')
+        cedula = data.get('cedula')
+        
+        usuario = data.get('usuario')
+        correo = data.get('correo')
+        edad = data.get('edad')
+        
+        # Actualizar el reco alimenticia sin cambiar idRA
+        cursor.execute('''
+            UPDATE persona
+
+            SET nombre = %s, cedula = %s,  usuario = %s,  correo = %s, edad = %s
+            WHERE id = %s
+        ''', (nombre, cedula, usuario,correo,edad, id))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": "Usuario actualizada correctamente"}), 200
+
+    except Exception as e:
+        print(f"Error al actualizar la usuario: {e}")
+        return jsonify({"error": "Hubo un problema al actualizar la usuario"}), 500
 
 
 
@@ -386,12 +507,121 @@ def verRecoAlimen():
 
 
 
-
 # Acaba ver Tablas --------------------------------------------------------------------------------
 
 
 
 
+
+
+# CRUD Tablas --------------------------------------------------------------------------------
+
+@app.route('/api/eliminarEjercicio/<int:id>', methods=['DELETE'])
+def eliminarEjercicio(id):
+    print(f"Intentando eliminar el ejercicio con id: {id}")  # Para verificar que se pasa el id
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
+        cursor.execute('DELETE FROM ejercicio WHERE idEjercicio = %s', (id,))
+
+        # Verificar si se eliminó algún registro
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Ejercicio no encontrado"}), 404
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"Ejercicio con id {id} eliminado exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el ejercicio: {e}")
+        return jsonify({"error": "Hubo  un problema al eliminar el ejercicio"}), 500
+
+
+
+
+
+
+
+@app.route('/api/eliminarRecoAlimen/<int:id>', methods=['DELETE'])
+def eliminarRecoAlimen(id):
+    print(f"Intentando eliminar el RecoAlimen con id: {id}")  # Para verificar que se pasa el id
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
+        cursor.execute('DELETE FROM recomendacionai WHERE idRA = %s', (id,))
+
+        # Verificar si se eliminó algún registro
+        if cursor.rowcount == 0:
+            return jsonify({"error": "RecoAlimen no encontrado"}), 404
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"RecoAlimen con id {id} RecoAlimen exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el RecoAlimen: {e}")
+        return jsonify({"error": "Hubo  un problema al eliminar el RecoAlimen"}), 500
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/api/eliminarUsuario/<int:id>', methods=['DELETE'])
+def eliminarUsuario(id):
+    print(f"Intentando eliminar Persona con id: {id}")  # Para verificar que se pasa el id
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
+        cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
+
+        # Verificar si se eliminó algún registro
+        if cursor.rowcount == 0:
+            return jsonify({"error": "id no encontrado"}), 404
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"id con id {id} id exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el id: {e}")
+        return jsonify({"error": "Hubo  un problema al eliminar el id"}), 500
+
+
+
+
+
+# --------------------------------------------------------------------------------
 
 
 
@@ -573,7 +803,9 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 
-    #no poner nada debajo de esto sino no funciona
+# --------------------------------------------------------------------------------
+
+ #no poner nada debajo de esto sino no funciona
 
 
 

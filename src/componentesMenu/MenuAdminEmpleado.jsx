@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import './MenuAdmin.css';
-import NavigationMenu from "../Components/NavigationMenuEmpAdmin";
+import NavigationMenu from "../Components/NavigationMenu";
 import FormCrearUsuario from "./FormCrearUsuario";
 
-
-function MenuAdmin() {
-    const [clientes, setClientes] = useState([]);
+function MenuAdminEmpleado() {
+    const [empleados, setEmpleados] = useState([]);
     const [showEditPopup, setShowEditPopup] = useState(false);  // Controlar si mostrar o no la ventana emergente
     const [SelectedUsuario, setSelectedUsuario] = useState(null);  // Guardar el ejercicio seleccionado para editar
     const [nombre, setNombre] = useState('');
     const [cedula, setCedula] = useState('');
-
+   
     const [usuario, setUsuario] = useState('');
     const [correo, setCorreo] = useState('');
     const [edad, setEdad] = useState('');
 
-    // Obtener los datos de los clientes
+
+    // Obtener los datos de los empleados
     useEffect(() => {
-        fetch('http://localhost:5000/verClientes', {
+        fetch('http://localhost:5000/verEmpleados', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -27,12 +27,12 @@ function MenuAdmin() {
             .then(data => {
                 console.log(data);  // Verifica qué datos se reciben
                 if (data && data.data) {
-                    setClientes(data.data);  // Asigna los datos de los clientes
+                    setEmpleados(data.data);  // Asigna los datos de los empleados
                 } else {
-                    console.log("No se encontró la propiedad 'data' en la respuesta de clientes");
+                    console.log("No se encontró la propiedad 'data' en la respuesta de empleados");
                 }
             })
-            .catch(error => console.error('Error al obtener datos de clientes:', error));
+            .catch(error => console.error('Error al obtener datos de empleados:', error));
     }, []);
 
     const handleEliminarUsuario = (id) => {
@@ -44,7 +44,7 @@ function MenuAdmin() {
                 if (data.message) {
                     alert(data.message); // Mensaje de éxito
                     // Actualizar el estado de los empleados
-                    setClientes(prevEmpleados => prevEmpleados.filter(item => item.id !== id));
+                    setEmpleados(prevEmpleados => prevEmpleados.filter(item => item.id !== id));
                 } else {
                     alert(data.error); // Mensaje de error
                 }
@@ -57,17 +57,16 @@ function MenuAdmin() {
 
 
 
-
-
+    
     // Función para abrir el popup y cargar los datos del ejercicio seleccionado
-    const handleEditarUsuario = (cliente) => {
-        setSelectedUsuario(cliente);
-        setNombre(cliente.nombre);  // Cargar los datos actuales del ejercicio
-        setCedula(cliente.cedula);
-
-        setUsuario(cliente.usuario);
-        setCorreo(cliente.correo);
-        setEdad(cliente.edad);
+    const handleEditarUsuario = (empleado) => {
+        setSelectedUsuario(empleado);
+        setNombre(empleado.nombre);  // Cargar los datos actuales del ejercicio
+        setCedula(empleado.cedula);
+        
+        setUsuario(empleado.usuario);
+        setCorreo(empleado.correo);
+        setEdad(empleado.edad);
         setShowEditPopup(true);  // Mostrar la ventana emergente
     };
 
@@ -80,7 +79,7 @@ function MenuAdmin() {
     };
 
 
-
+    
     // Función para enviar las actualizaciones al servidor
     const handleActualizarUsuario = () => {
         fetch(`http://localhost:5000/api/actualizarUsuario/${SelectedUsuario.id}`, {
@@ -91,11 +90,11 @@ function MenuAdmin() {
             body: JSON.stringify({
                 nombre,
                 cedula,
-
+               
                 usuario,
                 correo,
                 edad
-
+                
             }),
         })
             .then(response => response.json())
@@ -104,8 +103,8 @@ function MenuAdmin() {
                     alert('Usuario actualizado correctamente');
                     setShowEditPopup(false);  // Cerrar el popup
                     // Actualizar la tabla de ejercicios con los nuevos datos
-                    setClientes(prevClientes => prevClientes.map(ej => ej.id === SelectedUsuario.id ? { ...ej, nombre: nombre, cedula, usuario, correo, edad } : ej));
-
+                    setEmpleados(prevEmpleados => prevEmpleados.map(ej => ej.id === SelectedUsuario.id ? { ...ej, nombre: nombre, cedula,usuario,correo,edad } : ej));
+                    
                 } else {
                     alert(data.error);
                 }
@@ -125,9 +124,8 @@ function MenuAdmin() {
         <div>
             <NavigationMenu />
             <div id="menu-admin-container">
-                <br />
-                <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Clientes</h2>
-                <table id="clientes">
+                <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Empleados</h2>
+                <table id="empleados">
                     <thead>
                         <tr>
                             <th>Nombre</th>
@@ -138,23 +136,23 @@ function MenuAdmin() {
                             <th>Edad</th>
                             <th></th>
                             <th></th>
+                           
                         </tr>
                     </thead>
                     <tbody>
-                        {clientes.length > 0 ? (
-                            clientes.map(cliente => (
-                                <tr key={cliente.id}>
-
-                                    <td>{cliente.nombre}</td>
-                                    <td>{cliente.cedula}</td>
-                                    <td>{cliente.rol}</td>
-                                    <td>{cliente.usuario}</td>
-                                    <td>{cliente.correo}</td>
-                                    <td>{cliente.edad}</td>
+                        {empleados.length > 0 ? (
+                            empleados.map(empleado => (
+                                <tr key={empleado.id}>
+                                    <td>{empleado.nombre}</td>
+                                    <td>{empleado.cedula}</td>
+                                    <td>{empleado.rol}</td>
+                                    <td>{empleado.usuario}</td>
+                                    <td>{empleado.correo}</td>
+                                    <td>{empleado.edad}</td>
                                     <td>
-                                        <button
+                                    <button
                                             style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
-                                            onClick={() => handleEditarUsuario(cliente)}
+                                            onClick={() => handleEditarUsuario(empleado)}
                                         >
                                             Editar
                                         </button>
@@ -162,28 +160,24 @@ function MenuAdmin() {
                                     <td>
                                         <button
                                             style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
-                                            onClick={() => handleEliminarUsuario(cliente.id)} // Llamada a la función de eliminación
+                                            onClick={() => handleEliminarUsuario(empleado.id)} // Llamada a la función de eliminación
                                         >
                                             Eliminar
                                         </button>
                                     </td>
-
-
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="7">No hay clientes disponibles</td>
+                                <td colSpan="7">No hay empleados disponibles</td>
                             </tr>
                         )}
                     </tbody>
                 </table>
                 <br />
-
-                <br />
                 <FormCrearUsuario />
-                {/* Ventana emergente de edición */}
-                {showEditPopup && (
+                 {/* Ventana emergente de edición */}
+                 {showEditPopup && (
                     <div className="popup-overlay">
                         <div className="popup-container">
                             <h3>Editar Usuario</h3>
@@ -250,13 +244,9 @@ function MenuAdmin() {
                         </div>
                     </div>
                 )}
-
-
-
-
             </div>
         </div>
     );
 }
 
-export default MenuAdmin;
+export default MenuAdminEmpleado;

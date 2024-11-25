@@ -68,7 +68,7 @@ function NavBar() {
                         </PrivateRoute>
                         <PrivateRoute>  
                         <NavLink
-                            to="/componentesMenu/MenuAdmin"
+                            to="/componentesMenu/MenuAdminEmpleado"
                             className={({ isActive }) =>
                                 isActive ? "text-white font-semibold border-b-2 border-teal-400"
                 : "text-gray-300 hover:text-teal-400 hover: transition duration-300 ease-in-out"
