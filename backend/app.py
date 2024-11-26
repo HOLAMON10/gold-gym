@@ -15,36 +15,80 @@ Session(app)
 CORS(app, supports_credentials=True)
 
 # Funciones para registrar  --------------------------------------------------------------------------------
-
-#Registrar Usuarios
+# Registrar Usuarios
 @app.route('/api/register', methods=['POST'])
 def register_user():
     data = request.json
     nombre = data.get('nombre')
     cedula = data.get('cedula')
     rol = data.get('rol')
+    print(f"Rol recibido desde la solicitud: {rol}")
     usuario = data.get('usuario')
     contra = data.get('contra')
     correo = data.get('correo')
     edad = data.get('edad')
 
+    # Validación de campos requeridos
+    if not nombre or not cedula or not rol or not usuario or not contra or not correo or not edad:
+        return jsonify({"message": "Todos los campos son requeridos"}), 400
+
     # Conectar a la base de datos
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # Insertar el usuario en la tabla
-    cursor.execute("""
-        INSERT INTO persona (nombre, cedula, rol, usuario, contra, correo, edad)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (nombre, cedula, rol, usuario, contra, correo, edad))
+    try:
+        # Insertar el usuario en la tabla persona
+        cursor.execute("""
+            INSERT INTO persona (nombre, cedula, rol, usuario, contra, correo, edad)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (nombre, cedula, rol, usuario, contra, correo, edad))
 
-    # Confirmar la transacción y cerrar la conexión
-    connection.commit()
-    cursor.close()
-    connection.close()
+        # Obtener el ID de la persona recién insertada
+        person_id = cursor.lastrowid  
+        print("Id de persona insertado: " + str(person_id))
 
-    return jsonify({"message": "Usuario registrado exitosamente"}), 201
+        # Verificar el rol de la persona recién insertada
+        cursor.execute('SELECT rol FROM persona WHERE id = %s', (person_id,))
+        result = cursor.fetchone()
 
+        # Verificar si el resultado contiene un rol válido
+        if result:
+            rol_en_base = result[0]  # El rol se encuentra en el primer elemento de la tupla
+            print(f"Rol en base de datos: {rol_en_base}")
+
+            # Dependiendo del rol, insertar en la tabla correspondiente
+            if rol_en_base == 'Cliente':
+                # Verificar que idRa tiene un valor válido (puedes ajustarlo según tu lógica)
+                id_ra = 1  # Este es un ejemplo, cámbialo según el valor real de idRa
+                print(f"Insertando cliente con idpersona: {person_id}, idRa: {id_ra}")
+                cursor.execute("""
+                    INSERT INTO cliente (idpersona, idRa) VALUES (%s, %s)
+                """, (person_id, id_ra))
+
+            elif rol_en_base == 'Empleado':
+                # Insertar en la tabla empleado
+                print(f"Insertando empleado con idpersona: {person_id}, horario: 'No definido', numero: 'No definido'")
+                cursor.execute("""
+                    INSERT INTO empleado (idpersona, horario, numero) VALUES (%s, %s, %s)
+                """, (person_id, 'No definido', 'No definido'))
+
+            else:
+                print("Rol no válido o no se cumple ninguna condición")
+        else:
+            print("No se encontró el rol para la persona")
+
+        # Confirmar la transacción
+        connection.commit()
+        return jsonify({"message": "Usuario registrado exitosamente"}), 201
+
+    except Exception as e:
+        print(f"Error: {e}")
+        connection.rollback()  # Hacer rollback en caso de error
+        return jsonify({"message": "Error al registrar usuario", "error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        connection.close()
 
 
 

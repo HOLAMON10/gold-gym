@@ -7,6 +7,7 @@ import MenuRecoAlimenAdmin from "./componentesMenu/MenuRecoAlimenAdmin";
 import NutritionGuide from "./componentesMenu/DietaClient";
 import Dashboard from "./componentesMenu/MenuPrincipalCliente";
 import UserProfile from "./componentesMenu/PerfilUsuarioCliente";
+import MenuAdminEmpleado from "./componentesMenu/MenuAdminEmpleado";
 
 function App() {
 
@@ -25,6 +26,14 @@ function App() {
           element={
             <PrivateRoute>
               <MenuAdmin />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/componentesMenu/MenuAdminEmpleado"
+          element={
+            <PrivateRoute>
+              <MenuAdminEmpleado />
             </PrivateRoute>
           }
         />

@@ -21,7 +21,7 @@ function PrivateRoute({ allowedRoles, children } ) {
     // Check if the user's role has access to the current path
     const RoleAccess = {
         "Admin": ["/componentesMenu/MenuAdmin", "/"],
-        "Empleado": ["/componentesMenu/MenuAdmin", "/componentesMenu/MenuRecoAlimenAdmin", "/componentesMenu/MenuEjercicioAdmin"],
+        "Empleado": ["/componentesMenu/MenuAdmin", "/componentesMenu/MenuRecoAlimenAdmin", "/componentesMenu/MenuEjercicioAdmin" , "/componentesMenu/MenuAdminEmpleado"],
         "Cliente": ["/componentesMenu/DietaClient","/componentesMenu/MenuPrincipalCliente","/componentesMenu/PerfilUsuarioCliente"]
     };
     const allowedPathsForRole = RoleAccess[userRole];
