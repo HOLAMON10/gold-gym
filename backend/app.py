@@ -14,7 +14,12 @@ app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 CORS(app, supports_credentials=True)
 
+
+
 # Funciones para registrar  --------------------------------------------------------------------------------
+
+
+
 # Registrar Usuarios
 @app.route('/api/register', methods=['POST'])
 def register_user():
@@ -58,12 +63,24 @@ def register_user():
 
             # Dependiendo del rol, insertar en la tabla correspondiente
             if rol_en_base == 'Cliente':
-                # Verificar que idRa tiene un valor válido (puedes ajustarlo según tu lógica)
-                 # Este es un ejemplo, cámbialo según el valor real de idRa
+                
+                
                 print(f"Insertando cliente con idpersona: {person_id}")
                 cursor.execute("""
                     INSERT INTO cliente (idpersona) VALUES (%s)
                 """, (person_id,))
+
+                client_id = cursor.lastrowid
+                print("id de cliente: " + str(client_id))
+
+                cursor.execute("""
+                    INSERT INTO estadocuenta (idCli, fecha, estado) VALUES (%s, NOW(), %s)
+                """, (client_id, 'Aprobado'))
+                
+
+
+
+
 
             elif rol_en_base == 'Empleado':
                 # Insertar en la tabla empleado
@@ -89,6 +106,10 @@ def register_user():
     finally:
         cursor.close()
         connection.close()
+
+
+
+
 
 
 
@@ -121,6 +142,11 @@ def agregarEjercicio():
     connection.close()
 
     return jsonify({"message": "Ejercicio registrado exitosamente"}), 201
+
+
+
+
+
 
 
 
@@ -325,7 +351,7 @@ def login():
 
 # Backend para mostrar tablas --------------------------------------------------------------------------------
 
-
+  
 @app.route('/verClientes', methods=["GET"])
 def verClientes():
     try:
@@ -370,7 +396,7 @@ def verClientes():
 
 
 
-
+ 
 
 @app.route('/verEmpleados', methods=["GET"])
 def verEmpleados():
@@ -681,44 +707,39 @@ def upload_profile():
 
 
 
-
-
-
 @app.route('/api/eliminarUsuario/<int:id>', methods=['DELETE'])
 def eliminarUsuario(id):
-    print(f"Intentando eliminar Persona con id: {id}")  # Para verificar que se pasa el id
+    print(f"Intentando eliminar Persona con id: {id}")  
     try:
-        # Conectar a la base de datos
+   
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Verificar si el id pertenece a un cliente
-        cursor.execute('SELECT idpersona FROM cliente WHERE idpersona = %s', (id,))
-        cliente = cursor.fetchone()
+        cursor.execute('SELECT idCliente FROM cliente WHERE idpersona = %s', (id,))
+        cliente = cursor.fetchone()  # Obtener el resultado de la consulta
+        client_id = cliente[0] if cliente else None
+        print(f"Id de cliente: {client_id}")
 
         # Verificar si el id pertenece a un empleado
         cursor.execute('SELECT idpersona FROM empleado WHERE idpersona = %s', (id,))
         empleado = cursor.fetchone()
 
         if cliente:  # Si es un cliente
-            # Eliminar el cliente
+            # Primero, eliminar los registros en estadocuenta
+            cursor.execute('DELETE FROM estadocuenta WHERE idCli = %s', (client_id,))
+
+            # Luego, eliminar el cliente
             cursor.execute('DELETE FROM cliente WHERE idpersona = %s', (id,))
-            if cursor.rowcount == 0:
-                return jsonify({"error": "Cliente no encontrado"}), 404
 
         elif empleado:  # Si es un empleado
             # Eliminar el empleado
             cursor.execute('DELETE FROM empleado WHERE idpersona = %s', (id,))
-            if cursor.rowcount == 0:
-                return jsonify({"error": "Empleado no encontrado"}), 404
 
         else:
             return jsonify({"error": "Usuario no encontrado en cliente ni empleado"}), 404
 
         # Eliminar la persona (después de cliente o empleado)
         cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
-        if cursor.rowcount == 0:
-            return jsonify({"error": "Persona no encontrada"}), 404
 
         # Confirmar la transacción
         connection.commit()
@@ -732,6 +753,7 @@ def eliminarUsuario(id):
     except Exception as e:
         print(f"Error al eliminar el usuario: {e}")
         return jsonify({"error": "Hubo un problema al eliminar el usuario"}), 500
+
 
 
 
@@ -846,8 +868,41 @@ def get_user(user_id):
 def serve_images(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-if __name__ == '__main__':
+
+
+
+
+
+
+#ACTUALIZAR ESTADOS DE CUENTAS
+
+def validar_estados_al_inicio():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        
+        cursor.execute("""
+            UPDATE estadocuenta
+            SET estado = 'Denegado'
+            WHERE estado = 'Aprobado'
+            AND DATEDIFF(NOW(), fecha) > 30;
+        """)
+        connection.commit()
+        print("Estados actualizados exitosamente al iniciar el servidor.")
+    except Exception as e:
+        print(f"Error al actualizar estados al inicio del servidor: {e}")
+        connection.rollback()
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+
+if __name__ == "__main__":
+    validar_estados_al_inicio()  # Ejecutar la validación al arrancar
     app.run(debug=True)
+
 
 
 # --------------------------------------------------------------------------------
