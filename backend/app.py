@@ -308,9 +308,9 @@ def actualizarUsuario(id):
 
 #Login --------------------------------------------------------------------------------
 
+
 @app.route('/login', methods=['POST'])
 def login():
-
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
@@ -320,16 +320,37 @@ def login():
     cursor.execute('SELECT * FROM persona WHERE usuario = %s AND contra = %s', (username, password))
     
     record = cursor.fetchone()
-    print(record)
+    print(f"Registro encontrado: {record}")
 
     if record:
-        # If successful, create session and return success response
+        # Verificar si el usuario es un cliente
+        if record[3] == 'Cliente':  # Asumiendo que el rol 'cliente' está en la columna 3
+            # Obtener el idCliente relacionado con la persona
+            cursor.execute('SELECT idCliente FROM cliente WHERE idpersona = %s', (record[0],))
+            client_id = cursor.fetchone()
+            print(f"ID Cliente encontrado: {client_id}")
+
+            if client_id:
+                cursor.execute('SELECT estado FROM estadocuenta WHERE idCli = %s', (client_id[0],))
+                estado_cuenta = cursor.fetchone()
+                print(f"Estado de cuenta encontrado: {estado_cuenta}")
+                
+                if estado_cuenta:
+                    if estado_cuenta[0] == 'Denegado':
+                        response = {
+                            'message': 'Estado de cuenta denegado por falta de pago',
+                            'loggedin': False
+                        }
+                        connection.close()
+                        return jsonify(response), 403  # Forbidden
+
+        # Si todo está bien, iniciar sesión
         session['loggedin'] = True
         session['username'] = record[5]
-        session['role'] = record[3]   # Assuming record[5] contains the username
+        session['role'] = record[3]  # Suponiendo que el rol está en la columna 3
         session['id'] = record[0]
         response = {
-            'message': 'Login successful',
+            'message': 'Login exitoso',
             'username': session['username'],
             'role': session['role'],
             'id': session['id'],
@@ -339,19 +360,18 @@ def login():
         return jsonify(response), 200
 
     else:
-        # Login failed, return an error message
+        # Login fallido
         response = {
-            'message': 'Usuario o Contrasena incorrectos. Intente de nuevo.',
+            'message': 'Usuario o Contraseña incorrectos. Intente de nuevo.',
             'loggedin': False
         }
         return jsonify(response), 401  # Unauthorized
 
-
-
-
+ 
+ 
 # Backend para mostrar tablas --------------------------------------------------------------------------------
-
-  
+ 
+   
 @app.route('/verClientes', methods=["GET"])
 def verClientes():
     try:
