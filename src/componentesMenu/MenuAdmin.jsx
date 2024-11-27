@@ -10,7 +10,7 @@ function MenuAdmin() {
     const [SelectedUsuario, setSelectedUsuario] = useState(null);  // Guardar el ejercicio seleccionado para editar
     const [nombre, setNombre] = useState('');
     const [cedula, setCedula] = useState('');
-
+    const [contra, setContra] = useState('');
     const [usuario, setUsuario] = useState('');
     const [correo, setCorreo] = useState('');
     const [edad, setEdad] = useState('');
@@ -64,7 +64,7 @@ function MenuAdmin() {
         setSelectedUsuario(cliente);
         setNombre(cliente.nombre);  // Cargar los datos actuales del ejercicio
         setCedula(cliente.cedula);
-
+        setContra(cliente.contra);
         setUsuario(cliente.usuario);
         setCorreo(cliente.correo);
         setEdad(cliente.edad);
@@ -134,8 +134,10 @@ function MenuAdmin() {
                             <th>Cédula</th>
                             <th>Tipo Usuario</th>
                             <th>Usuario</th>
+                            <th>Contraseña</th>
                             <th>Correo</th>
                             <th>Edad</th>
+                            <th></th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -149,6 +151,7 @@ function MenuAdmin() {
                                     <td>{cliente.cedula}</td>
                                     <td>{cliente.rol}</td>
                                     <td>{cliente.usuario}</td>
+                                    <td>{cliente.contra}</td>
                                     <td>{cliente.correo}</td>
                                     <td>{cliente.edad}</td>
                                     <td>

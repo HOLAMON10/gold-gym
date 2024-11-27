@@ -7,22 +7,18 @@ function FormCrearEjercicio() {
         const nombreEjer = document.getElementById("nombreEjer").value;
         const repeticiones = document.getElementById("repeticiones").value;
         const levantamientos = document.getElementById("levantamientos").value;
-        const idrutina = document.querySelector('input[name="idrutina"]:checked')?.value;
-        if (!idrutina) {
-            alert("Por favor selecciona una rutina para asignar el ejercicio");
-            return;
-        }
-
-
-
+        const objetivo = document.getElementById("objetivo").value; // Capturar valor seleccionado
+        const descripcion = document.getElementById("descripcion").value;
+        const imagen_ejercicio = document.getElementById("imagen_ejercicio").value;
 
         // Crear el objeto con los datos del formulario
         const data = {
             nombreEjer,
             repeticiones,
             levantamientos,
-            idrutina,
-
+            objetivo, // Enviar el valor del dropdown
+            descripcion,
+            imagen_ejercicio
         };
 
         // Hacer la petición al backend
@@ -66,24 +62,35 @@ function FormCrearEjercicio() {
                 className="inputs-Crear"
             />
 
-            <form className="formCheck">
-                <div>
-                    <input id="checkE" type="radio" name="idrutina" value="1" />
-                    <label htmlFor="checkE">BajarPeso</label>
-                </div>
+            {/* Cambiar de input a select para el objetivo */}
+            <select id="objetivo" className="inputs-Crear">
+                <option value="">Selecciona el objetivo</option>
+                <option value="Pecho">Pectorales</option>
+                <option value="Espalda">Dorsales</option>
+                <option value="Piernas">Hombros</option>
+                <option value="Brazos">Triceps</option>
+                <option value="Brazos">Biceps</option>
+                <option value="Abdomen">Piernas</option>
+                
+            </select>
 
-                <div>
-                    <input id="checkC" type="radio" name="idrutina" value="2" />
-                    <label htmlFor="checkC">SubirMasa</label>
-                </div>
-            </form>
+            <input
+                type="text"
+                id="descripcion"
+                placeholder="Ingresa descripcion"
+                className="inputs-Crear"
+            />
 
-
+            <input
+                type="text"
+                id="imagen_ejercicio"
+                placeholder="Ingresa imagen"
+                className="inputs-Crear"
+            />
 
             <button onClick={Agregarclic} className="btn-crear-usuario">Agregar ejercicio</button>
         </div>
     );
 }
-
 
 export default FormCrearEjercicio;

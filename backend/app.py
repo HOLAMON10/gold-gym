@@ -59,11 +59,11 @@ def register_user():
             # Dependiendo del rol, insertar en la tabla correspondiente
             if rol_en_base == 'Cliente':
                 # Verificar que idRa tiene un valor válido (puedes ajustarlo según tu lógica)
-                id_ra = 1  # Este es un ejemplo, cámbialo según el valor real de idRa
-                print(f"Insertando cliente con idpersona: {person_id}, idRa: {id_ra}")
+                 # Este es un ejemplo, cámbialo según el valor real de idRa
+                print(f"Insertando cliente con idpersona: {person_id}")
                 cursor.execute("""
-                    INSERT INTO cliente (idpersona, idRa) VALUES (%s, %s)
-                """, (person_id, id_ra))
+                    INSERT INTO cliente (idpersona) VALUES (%s)
+                """, (person_id,))
 
             elif rol_en_base == 'Empleado':
                 # Insertar en la tabla empleado
@@ -100,7 +100,9 @@ def agregarEjercicio():
     nombreEjer = data.get('nombreEjer')
     repeticiones = data.get('repeticiones')
     levantamientos = data.get('levantamientos')
-    idrutina = data.get('idrutina')
+    objetivo = data.get('objetivo')
+    descripcion = data.get('descripcion')
+    imagen_ejercicio = data.get('imagen_ejercicio')
     
 
     # Conectar a la base de datos
@@ -109,9 +111,9 @@ def agregarEjercicio():
 
     # Insertar el ejercicio en la tabla
     cursor.execute("""
-        INSERT INTO ejercicio (nombreEjer, repeticiones, levantamientos, idrutina)
-        VALUES (%s, %s, %s, %s)
-    """, (nombreEjer, repeticiones, levantamientos, idrutina))
+        INSERT INTO ejercicio (nombreEjer, repeticiones, levantamientos, objetivo,descripcion,imagen_ejercicio)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (nombreEjer, repeticiones, levantamientos, objetivo,descripcion,imagen_ejercicio))
 
     # Confirmar la transacción y cerrar la conexión
     connection.commit()
@@ -166,25 +168,23 @@ def actualizarEjercicio(id):
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Verificar si el ejercicio existe
-        cursor.execute('SELECT idRutina FROM ejercicio WHERE idEjercicio = %s', (id,))
-        ejercicio_actual = cursor.fetchone()
-
-        if not ejercicio_actual:
-            return jsonify({"error": "Ejercicio no encontrado"}), 404
+      
 
         # Obtener los datos del cuerpo de la solicitud
         data = request.json
         nombreEjer = data.get('nombreEjer')
         repeticiones = data.get('repeticiones')
         levantamientos = data.get('levantamientos')
+        objetivo = data.get('objetivo')
+        descripcion = data.get('descripcion')
+        imagen_ejercicio = data.get('imagen_ejercicio')
 
         # Actualizar el ejercicio, sin cambiar idRutina
         cursor.execute('''
             UPDATE ejercicio
-            SET nombreEjer = %s, repeticiones = %s, levantamientos = %s
+            SET nombreEjer = %s, repeticiones = %s, levantamientos = %s, objetivo =%s, descripcion =%s, imagen_ejercicio =%s
             WHERE idEjercicio = %s
-        ''', (nombreEjer, repeticiones, levantamientos, id))
+        ''', (nombreEjer, repeticiones, levantamientos,objetivo,descripcion,imagen_ejercicio, id))
 
         connection.commit()
         cursor.close()
@@ -195,6 +195,9 @@ def actualizarEjercicio(id):
     except Exception as e:
         print(f"Error al actualizar el ejercicio: {e}")
         return jsonify({"error": "Hubo un problema al actualizar el ejercicio"}), 500
+
+
+
 
 
 
@@ -412,18 +415,21 @@ def verEmpleados():
         return jsonify({"message": "Error al conectar con la base de datos", "error": str(e)}), 500
 
 
-#Ver Ejercicios para BAJAR DE PESO
 
 
-@app.route('/verEjerciciosBP', methods=["GET"])
-def verEjerciciosBP():
+
+
+#Ver Ejercicios
+
+@app.route('/verEjercicios', methods=["GET"])
+def verEjercicios():
     try:
         # Conectar a la base de datos
         connection = get_db_connection()
         cursor = connection.cursor()
 
         # Ejecutar la consulta para obtener todas las personas con rol "Cliente"
-        cursor.execute('SELECT * FROM ejercicio WHERE idrutina = %s', ('1',))
+        cursor.execute('SELECT * FROM ejercicio')
 
         # Obtener todos los resultados de la consulta
         ejercicios = cursor.fetchall()
@@ -440,7 +446,9 @@ def verEjerciciosBP():
                 'nombreEjer': ejercicio[1],
                 'repeticiones': ejercicio[2],
                 'levantamientos': ejercicio[3],
-                'idrutina': ejercicio[4],
+                'objetivo': ejercicio[4],
+                'descripcion': ejercicio[5],
+                'imagen_ejercicio': ejercicio[6]
                 
             })
 
@@ -457,49 +465,6 @@ def verEjerciciosBP():
 
 
 
-#Ver Ejercicios para SUBIR MASA
-
-
-
-@app.route('/verEjerciciosSM', methods=["GET"])
-def verEjerciciosSM():
-    try:
-        # Conectar a la base de datos
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        # Ejecutar la consulta para obtener todas las personas con rol "Cliente"
-        cursor.execute('SELECT * FROM ejercicio WHERE idrutina = %s', ('2',))
-
-        # Obtener todos los resultados de la consulta
-        ejercicios = cursor.fetchall()
-
-        # Verificar si no hay personas con rol "Cliente"
-        if not ejercicios:
-            return jsonify({"message": "No hay Ejercicios en la base de datos"}), 404
-
-        # Crear una lista de diccionarios para representar cada cliente
-        resultado = []
-        for ejercicio in ejercicios:
-            resultado.append({
-                'id': ejercicio[0],
-                'nombreEjer': ejercicio[1],
-                'repeticiones': ejercicio[2],
-                'levantamientos': ejercicio[3],
-                'idrutina': ejercicio[4],
-                
-            })
-
-        # Cerrar cursor y conexión
-        cursor.close()
-        connection.close()
-
-        # Devolver los datos en formato JSON
-        return jsonify({"data": resultado, "message": "Ejercicios obtenidos correctamente"}), 200
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"message": "Error al conectar con la base de datos", "error": str(e)}), 500
 
 
 
@@ -641,6 +606,12 @@ def get_user(user_id):
         print(f"User with ID {user_id} not found.")
         return jsonify({"error": "User not found"}), 404
     
+
+
+
+
+
+
 @app.route('/api/upload', methods=['POST'])
 def upload_profile():
     try:
@@ -713,9 +684,6 @@ def upload_profile():
 
 
 
-
-
-
 @app.route('/api/eliminarUsuario/<int:id>', methods=['DELETE'])
 def eliminarUsuario(id):
     print(f"Intentando eliminar Persona con id: {id}")  # Para verificar que se pasa el id
@@ -724,12 +692,33 @@ def eliminarUsuario(id):
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
-        cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
+        # Verificar si el id pertenece a un cliente
+        cursor.execute('SELECT idpersona FROM cliente WHERE idpersona = %s', (id,))
+        cliente = cursor.fetchone()
 
-        # Verificar si se eliminó algún registro
+        # Verificar si el id pertenece a un empleado
+        cursor.execute('SELECT idpersona FROM empleado WHERE idpersona = %s', (id,))
+        empleado = cursor.fetchone()
+
+        if cliente:  # Si es un cliente
+            # Eliminar el cliente
+            cursor.execute('DELETE FROM cliente WHERE idpersona = %s', (id,))
+            if cursor.rowcount == 0:
+                return jsonify({"error": "Cliente no encontrado"}), 404
+
+        elif empleado:  # Si es un empleado
+            # Eliminar el empleado
+            cursor.execute('DELETE FROM empleado WHERE idpersona = %s', (id,))
+            if cursor.rowcount == 0:
+                return jsonify({"error": "Empleado no encontrado"}), 404
+
+        else:
+            return jsonify({"error": "Usuario no encontrado en cliente ni empleado"}), 404
+
+        # Eliminar la persona (después de cliente o empleado)
+        cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
         if cursor.rowcount == 0:
-            return jsonify({"error": "id no encontrado"}), 404
+            return jsonify({"error": "Persona no encontrada"}), 404
 
         # Confirmar la transacción
         connection.commit()
@@ -738,11 +727,11 @@ def eliminarUsuario(id):
         cursor.close()
         connection.close()
 
-        return jsonify({"message": f"id con id {id} id exitosamente"}), 200
+        return jsonify({"message": f"Usuario con id {id} eliminado exitosamente"}), 200
 
     except Exception as e:
-        print(f"Error al eliminar el id: {e}")
-        return jsonify({"error": "Hubo  un problema al eliminar el id"}), 500
+        print(f"Error al eliminar el usuario: {e}")
+        return jsonify({"error": "Hubo un problema al eliminar el usuario"}), 500
 
 
 
