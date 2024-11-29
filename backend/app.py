@@ -7,6 +7,10 @@ from flask_cors import CORS
 from flask_session import Session
 from ConexionDB.database import get_db_connection
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -17,8 +21,6 @@ CORS(app, supports_credentials=True)
 
 
 # Funciones para registrar  --------------------------------------------------------------------------------
-
-
 
 # Registrar Usuarios
 @app.route('/api/register', methods=['POST'])
@@ -42,6 +44,9 @@ def register_user():
     cursor = connection.cursor()
 
     try:
+
+       
+
         # Insertar el usuario en la tabla persona
         cursor.execute("""
             INSERT INTO persona (nombre, cedula, rol, usuario, contra, correo, edad)
@@ -78,7 +83,8 @@ def register_user():
                 """, (client_id, 'Aprobado'))
                 
 
-
+              # Enviar correo al usuario con los datos de registro
+                send_email(correo, usuario, contra)
 
 
 
@@ -106,7 +112,6 @@ def register_user():
     finally:
         cursor.close()
         connection.close()
-
 
 
 
@@ -888,6 +893,32 @@ def get_user(user_id):
 def serve_images(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+
+
+
+
+# Función para enviar el correo
+def send_email(to_email, username, password):
+    from_email = "flexf9095@gmail.com"  # Usa tu correo de Gmail
+    from_password = "vfxu ppit pmum nkgd"  # Tu contraseña de Gmail
+
+    # Configuración del servidor SMTP de Gmail
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login(from_email, from_password)
+
+    # Crear el mensaje
+    subject = "Gracias por registrarte en Flex Fitness"
+    body = f"Hola, gracias por suscribirte a Flex Fitness. Tu usuario es: {username} y tu contraseña es: {password}"
+
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Enviar el correo
+    server.sendmail(from_email, to_email, msg.as_string())
+    server.quit()
 
 
 
