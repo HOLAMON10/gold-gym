@@ -11,6 +11,7 @@ from ConexionDB.database import get_db_connection
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['SESSION_TYPE'] = 'filesystem'
+
 Session(app)
 CORS(app, supports_credentials=True)
 
@@ -599,13 +600,18 @@ def get_user(user_id):
     
 @app.route('/api/upload', methods=['POST'])
 def upload_profile():
+    conn = None
     try:
         # Get user data from the form
         user_id = request.form.get("userId")
         nombre = request.form.get("nombre")
         usuario = request.form.get("usuario")
         correo = request.form.get("correo")
-        edad = request.form.get("edad")
+        edad2 = request.form.get("edad")
+        print(request.form)
+        edad = int(edad2)
+        
+        
 
         if not user_id:
             return jsonify({"error": "User ID is required"}), 400
@@ -619,7 +625,7 @@ def upload_profile():
         user = cursor.fetchone()
         if not user:
             return jsonify({"error": "User not found"}), 404
-
+        
         # Update user data in the database
         update_query = """
             UPDATE persona
@@ -638,12 +644,12 @@ def upload_profile():
                 file.save(filepath)
 
                 # Store the relative path (e.g., "images/filename.jpg")
-                relative_path = os.path.relpath(filepath, start='./public')
+                relative_path = os.path.relpath(filepath, start='./images')
 
                 # Update profile_image in the database
                 cursor.execute(
                     "UPDATE persona SET persona_imagen = %s WHERE id = %s",
-                    (relative_path, user_id)
+                    (filename, user_id)
                 )
 
         # Commit the changes
@@ -652,8 +658,9 @@ def upload_profile():
         # Fetch the updated user data
         cursor.execute("SELECT * FROM persona WHERE id = %s", (user_id,))
         updated_user = cursor.fetchone()
-
+        conn.close()
         return jsonify({"message": "Profile updated successfully", "user": updated_user}), 200
+        
 
     except Exception as e:
         print(e)
@@ -812,6 +819,20 @@ def get_user(user_id):
 @app.route('/images/<path:filename>')
 def serve_images(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/api/get_exercises', methods=['GET'])
+def get_exercises():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)  # Fetch results as dictionaries
+
+    cursor.execute("SELECT * FROM ejercicio")
+    exercises = cursor.fetchall()
+    print(exercises)
+    
+    cursor.close()
+    connection.close()
+
+    return jsonify(exercises)
 
 if __name__ == '__main__':
     app.run(debug=True)
