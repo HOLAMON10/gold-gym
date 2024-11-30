@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Cropper from "react-easy-crop";
 import { getCroppedImg } from "../utils/cropImage";
 import NavBarClient from "../Components/NavigationMenuClient";
+import { Alert, Snackbar } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
 
 const UserProfile = () => {
   const [image, setImage] = useState(null);
@@ -18,28 +20,37 @@ const UserProfile = () => {
     edad: "",
     imagen: ""
   });
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("success");
 
   useEffect(() => {
     const userId = sessionStorage.getItem("id");
-
-    if (!userId) {
-      alert("User not logged in.");
-      return;
-    }
 
     const fetchUserData = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/user/${userId}`);
         if (response.ok) {
           const data = await response.json();
-          setUserData(data);
+          setUserData({
+            nombre: data.nombre,
+            usuario: data.usuario,
+            correo: data.correo,
+            edad: data.edad,
+            imagen: data.imagen
+          });
           console.log("User data fetched:", data);
           setPreview(data.persona_imagen);
         } else {
-          console.error("Failed to fetch user data.");
+          setAlertSeverity("error");
+          setAlertMessage("Failed to fetch user data.");
+          setAlertOpen(true);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setAlertSeverity("error");
+        setAlertMessage("An error occurred while fetching user data.");
+        setAlertOpen(true);
       }
     };
 
@@ -52,7 +63,9 @@ const UserProfile = () => {
       setImage(URL.createObjectURL(file));
       setOriginalFile(file);
     } else {
-      alert("Invalid file. Please upload an image less than 5 MB.");
+      setAlertSeverity("error");
+      setAlertMessage("Invalid file. Please upload an image less than 5 MB.");
+      setAlertOpen(true);
     }
   };
 
@@ -65,7 +78,10 @@ const UserProfile = () => {
   const handleSave = async () => {
     const userId = sessionStorage.getItem("id");
     if (!userId) {
-      alert("User not logged in.");
+      setAlertSeverity("error");
+      setAlertMessage("User not logged in.");
+      setAlertOpen(true);
+
       return;
     }
 
@@ -76,16 +92,13 @@ const UserProfile = () => {
     formData.append("correo", userData.correo);
     formData.append("edad", userData.edad);
   
-
     if (image && croppedArea) {
       const croppedImage = await getCroppedImg(image, croppedArea);
       if (originalFile) {
-        // Use the original file's name when appending the cropped image
-        const originalFileName = originalFile.name;  // Get the original filename
+        const originalFileName = originalFile.name;  
         const fixedPath = originalFileName.replace(/^(\.\.\/)+/, '/');
-        formData.append("file", croppedImage, fixedPath);  // Append with original filename
+        formData.append("file", croppedImage, fixedPath);
       }
-      
     }
 
     try {
@@ -96,24 +109,34 @@ const UserProfile = () => {
 
       if (response.ok) {
         const updatedUser = await response.json();
-        alert("Profile updated successfully.");
+       
         setUserData(updatedUser);
-        setPreview(updatedUser.persona_imagen);
-        console.log("Updated preview value:");
+        if(updatedUser.persona_imagen) setPreview(updatedUser.persona_imagen);
+        setUserData(userData)
+        setAlertSeverity("success");
+        setAlertMessage("User information saved successfully!");
+        setAlertOpen(true)
+
+        
       } else {
-        alert("Failed to save user information.");
+        setAlertSeverity("error");
+        setAlertMessage("Failed to save user information.");
       }
     } catch (error) {
       console.error("Error saving user information:", error);
-      alert("An error occurred.");
+      setAlertSeverity("error");
+      setAlertMessage("An error occurred while saving user information.");
+    } finally {
+      setAlertOpen(true);
     }
   };
 
   return (
-    <div className="bg-gray-100">
+    <div className="bg-[#333333] min-h-screen">
       <NavBarClient />
+      
       <div className="max-w-4xl mx-auto py-8 px-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="bg-[#1F1F1F] rounded-lg shadow-lg p-6 mb-6">
           <div className="flex flex-col items-center">
             {image ? (
               <div className="relative w-full" style={{ height: "400px" }}>
@@ -146,7 +169,7 @@ const UserProfile = () => {
             )}
             <button
               onClick={() => fileInputRef.current.click()}
-              className="text-sm text-indigo-600 hover:text-indigo-800"
+              className="text-sm text-[#F7F7F7] hover:text-indigo-800"
             >
               Change Photo
             </button>
@@ -161,41 +184,41 @@ const UserProfile = () => {
         </div>
 
         {/* Personal Information */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Personal Information</h2>
+        <div className="bg-[#1F1F1F] rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-xl font-bold  mb-4 text-[#F7F7F7]">Personal Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <label className="block text-sm font-medium  mb-1 text-[#F7F7F7]">Full Name</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#577399] focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]" 
                 value={userData.nombre}
                 onChange={(e) => setUserData({ ...userData, nombre: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label className="block text-sm font-medium  mb-1 text-[#F7F7F7]">Username</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
                 value={userData.usuario}
                 onChange={(e) => setUserData({ ...userData, usuario: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium  mb-1 text-[#F7F7F7]">Email</label>
               <input
                 type="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
                 value={userData.correo}
                 onChange={(e) => setUserData({ ...userData, correo: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+              <label className="block text-sm font-medium mb-1 text-[#F7F7F7]">Age</label>
               <input
-                type="number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                type="text"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
                 value={userData.edad}
                 onChange={(e) => setUserData({ ...userData, edad: e.target.value })}
               />
@@ -212,6 +235,30 @@ const UserProfile = () => {
           </button>
         </div>
       </div>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={600}
+        onClose={() => setAlertOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        style={{marginTop:'3%'}} 
+       
+      >
+        <Alert
+          onClose={() => setAlertOpen(false)}
+          severity={alertSeverity}
+          icon={<CheckIcon fontSize="inherit" />}
+          sx={{
+            backgroundColor: alertSeverity === 'success' ? '#169873' : alertSeverity === 'error' ? '#f44336' : '#ff9800', // Custom background colors for success, error, or warning
+            color: 'white', // White text for better contrast
+            borderRadius: '8px', // Rounded corners
+            fontWeight: 'bold', // Bold text
+            boxShadow: 2, // Light shadow for elevation effect
+            padding: '16px 24px', // Padding for better spacing
+          }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -7,10 +7,7 @@ function PrivateRoute({ allowedRoles, children } ) {
     const userRole = sessionStorage.getItem('role'); // Get the user's role from sessionStorage
     const location = useLocation();
 
-    console.log("Current Path:", location.pathname);
-    console.log("Is Authenticated:", isAuthenticated);
-    console.log("User Role:", userRole);
-    console.log("id", sessionStorage.getItem('id'))
+   
     
     
     if (!isAuthenticated) {
@@ -22,7 +19,7 @@ function PrivateRoute({ allowedRoles, children } ) {
     const RoleAccess = {
         "Admin": ["/componentesMenu/MenuAdmin", "/"],
         "Empleado": ["/componentesMenu/MenuAdmin", "/componentesMenu/MenuRecoAlimenAdmin", "/componentesMenu/MenuEjercicioAdmin"],
-        "Cliente": ["/componentesMenu/DietaClient","/componentesMenu/MenuPrincipalCliente","/componentesMenu/PerfilUsuarioCliente"]
+        "Cliente": ["/componentesMenu/DietaClient","/componentesMenu/MenuPrincipalCliente","/componentesMenu/PerfilUsuarioCliente","/componentesMenu/RutinasClient","/componentesMenu/Contacto"]
     };
     const allowedPathsForRole = RoleAccess[userRole];
    

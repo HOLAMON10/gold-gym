@@ -113,3 +113,51 @@
 .info-text:hover {
   color: #ffd700; /* Gold color on hover for a premium feel */
 }
+
+
+/* Mobile screen responsiveness */
+@media (max-width: 768px) {
+  /* On mobile screens, hide right-side content */
+  .right-side {
+      display: none;
+  }
+
+  .wrapper {
+      flex-direction: column;
+      padding: 10px;
+  }
+
+  .left-side {
+      padding: 20px;
+      width: 100%;
+      max-width: 100%;
+  }
+
+  .title {
+      font-size: 24px;
+  }
+
+  .input {
+      font-size: 14px;
+  }
+
+  .form-btn {
+      font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+      font-size: 22px;
+  }
+
+  .input {
+      font-size: 14px;
+      padding: 12px;
+  }
+
+  .form-btn {
+      font-size: 16px;
+      padding: 14px;
+  }
+}

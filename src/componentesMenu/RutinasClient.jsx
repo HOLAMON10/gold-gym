@@ -1,129 +1,119 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import NavBarClient from "../Components/NavigationMenuClient";
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 const Rutinas = () => {
+    const [exercises, setExercises] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedExercise, setSelectedExercise] = useState(null);  // To store the selected exercise for the modal
+    const [isModalOpen, setIsModalOpen] = useState(false);  // To control modal visibility
+
+    useEffect(() => {
+        const fetchExercises = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/api/get_exercises");
+                const data = await response.json();
+                setExercises(data);
+                console.log("Exercises data:", data);  // Debugging output
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Error fetching exercises:", error);
+            }
+        };
+        fetchExercises();
+    }, []);
+
+    // Group exercises by their 'objective'
+    const groupedExercises = exercises.reduce((acc, exercise) => {
+        if (!acc[exercise.objetivo]) {
+            acc[exercise.objetivo] = [];
+        }
+        acc[exercise.objetivo].push(exercise);
+        return acc;
+    }, {});
+
+    // Function to handle opening the modal
+    const openModal = (exercise) => {
+        setSelectedExercise(exercise);
+        setIsModalOpen(true);
+    };
+
+    // Function to handle closing the modal
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     return (
-        <div>
+        <div className="bg-[#292929]">
             <NavBarClient />
-            <div className="max-w-7xl mx-auto px-4 py-8">
-
-                {/* Section: Pecho */}
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Pecho</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Exercise Card 1 */}
-                        <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                            <div className="h-48 bg-gray-200">
-                                <img
-                                    src="/api/placeholder/400/300"
-                                    alt="Press de banca"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">Press de Banca</h3>
-                                <p className="text-gray-600">
-                                    Ejercicio compuesto que trabaja principalmente el pecho mayor,
-                                    tríceps y hombros anteriores.
-                                </p>
-                                <button className="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                                    Ver detalles →
-                                </button>
-                            </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8">
+                {Object.keys(groupedExercises).map((objective) => (
+                    <section key={objective} className="mb-12">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 text-[#F7F7F7]">
+                            {objective}
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {groupedExercises[objective].map((exercise) => (
+                                <div
+                                    key={exercise.name}
+                                    className="bg-[#1F1F1F] rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow text-[#F7F7F7]"
+                                >
+                                    <button onClick={() => openModal(exercise)}>
+                                        <div className="h-48 sm:h-56 bg-gray-200">
+                                            <img
+                                                src={`/images/${exercise.imagen_ejercicio}`}
+                                                alt={exercise.nombreEjer}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="p-4 sm:p-6">
+                                            <h3 className="text-lg sm:text-xl font-bold mb-2">
+                                                {exercise.nombreEjer}
+                                            </h3>
+                                            <p>{exercise.descripcion}</p>
+                                        </div>
+                                    </button>
+                                    <button
+                                        className="bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-all"
+                                    >
+                                        <FavoriteIcon fontSize="large" />
+                                    </button>
+                                </div>
+                            ))}
                         </div>
-
-                        {/* Exercise Card 2 */}
-                        <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                            <div className="h-48 bg-gray-200">
-                                <img
-                                    src="/api/placeholder/400/300"
-                                    alt="Aperturas con mancuernas"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                                    Aperturas con Mancuernas
-                                </h3>
-                                <p className="text-gray-600">
-                                    Ejercicio de aislamiento que se centra en el desarrollo y
-                                    estiramiento del pecho.
-                                </p>
-                                <button className="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                                    Ver detalles →
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Section: Espalda */}
-                <section className="mb-12">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">Espalda</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Exercise Card 1 */}
-                        <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                            <div className="h-48 bg-gray-200">
-                                <img
-                                    src="/api/placeholder/400/300"
-                                    alt="Dominadas"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">Dominadas</h3>
-                                <p className="text-gray-600">
-                                    Ejercicio compuesto que trabaja la espalda superior y los
-                                    músculos del core.
-                                </p>
-                                <button className="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                                    Ver detalles →
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Exercise Card 2 */}
-                        <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                            <div className="h-48 bg-gray-200">
-                                <img
-                                    src="/api/placeholder/400/300"
-                                    alt="Remo con barra"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">Remo con Barra</h3>
-                                <p className="text-gray-600">
-                                    Ejercicio que fortalece los músculos de la espalda media y
-                                    baja.
-                                </p>
-                                <button className="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">
-                                    Ver detalles →
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Load More Button */}
-                <div className="text-center mt-8">
-                    <button className="px-6 py-3 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Cargar más ejercicios
-                    </button>
-                </div>
-
-                {/* Footer */}
-                <footer className="bg-white mt-12 py-8">
-                    <div className="max-w-7xl mx-auto px-4">
-                        <div className="text-center text-gray-600">
-                            <p>© 2024 Valerio Fitness. Todos los derechos reservados.</p>
-                        </div>
-                    </div>
-                </footer>
+                    </section>
+                ))}
             </div>
+
+            {/* Modal Responsiveness */}
+            {isModalOpen && selectedExercise && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-30">
+                    <div className="bg-[#141414] p-4 sm:p-6 rounded-lg w-full max-w-md md:max-w-3xl h-auto md:h-3/5 relative overflow-y-auto">
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-2xl"
+                        >
+                            ×
+                        </button>
+                        <div>
+                            <h2 className="text-white text-xl md:text-2xl font-bold">{selectedExercise.nombreEjer}</h2>
+                            <div className="h-60 md:h-80 bg-gray-200 mt-4">
+                                <img
+                                    src={`/images/${selectedExercise.imagen_ejercicio}`}
+                                    alt={selectedExercise.nombreEjer}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <p className="mt-4 text-white"><strong>Repeticiones:</strong> {selectedExercise.repeticiones}</p>
+                            <p className="mt-4 text-white"><strong>Levantamientos:</strong> {selectedExercise.levantamientos}</p>
+                            <p className="mt-4 text-white"><strong>Descripcion:</strong> {selectedExercise.descripcion}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };
-
 
 export default Rutinas;
