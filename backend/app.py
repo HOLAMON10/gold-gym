@@ -7,6 +7,10 @@ from flask_cors import CORS
 from flask_session import Session
 from ConexionDB.database import get_db_connection
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -15,36 +19,102 @@ app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 CORS(app, supports_credentials=True)
 
+
+
 # Funciones para registrar  --------------------------------------------------------------------------------
 
-#Registrar Usuarios
+# Registrar Usuarios
 @app.route('/api/register', methods=['POST'])
 def register_user():
     data = request.json
     nombre = data.get('nombre')
     cedula = data.get('cedula')
     rol = data.get('rol')
+    print(f"Rol recibido desde la solicitud: {rol}")
     usuario = data.get('usuario')
     contra = data.get('contra')
     correo = data.get('correo')
     edad = data.get('edad')
 
+    # Validación de campos requeridos
+    if not nombre or not cedula or not rol or not usuario or not contra or not correo or not edad:
+        return jsonify({"message": "Todos los campos son requeridos"}), 400
+
     # Conectar a la base de datos
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # Insertar el usuario en la tabla
-    cursor.execute("""
-        INSERT INTO persona (nombre, cedula, rol, usuario, contra, correo, edad)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (nombre, cedula, rol, usuario, contra, correo, edad))
+    try:
 
-    # Confirmar la transacción y cerrar la conexión
-    connection.commit()
-    cursor.close()
-    connection.close()
+       
 
-    return jsonify({"message": "Usuario registrado exitosamente"}), 201
+        # Insertar el usuario en la tabla persona
+        cursor.execute("""
+            INSERT INTO persona (nombre, cedula, rol, usuario, contra, correo, edad)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (nombre, cedula, rol, usuario, contra, correo, edad))
+
+        # Obtener el ID de la persona recién insertada
+        person_id = cursor.lastrowid  
+        print("Id de persona insertado: " + str(person_id))
+
+        # Verificar el rol de la persona recién insertada
+        cursor.execute('SELECT rol FROM persona WHERE id = %s', (person_id,))
+        result = cursor.fetchone()
+
+        # Verificar si el resultado contiene un rol válido
+        if result:
+            rol_en_base = result[0]  # El rol se encuentra en el primer elemento de la tupla
+            print(f"Rol en base de datos: {rol_en_base}")
+
+            # Dependiendo del rol, insertar en la tabla correspondiente
+            if rol_en_base == 'Cliente':
+                
+                
+                print(f"Insertando cliente con idpersona: {person_id}")
+                cursor.execute("""
+                    INSERT INTO cliente (idpersona) VALUES (%s)
+                """, (person_id,))
+
+                client_id = cursor.lastrowid
+                print("id de cliente: " + str(client_id))
+
+                cursor.execute("""
+                    INSERT INTO estadocuenta (idCli, fecha, estado) VALUES (%s, NOW(), %s)
+                """, (client_id, 'Aprobado'))
+                
+
+              # Enviar correo al usuario con los datos de registro
+                send_email(correo, usuario, contra)
+
+
+
+            elif rol_en_base == 'Empleado':
+                # Insertar en la tabla empleado
+                print(f"Insertando empleado con idpersona: {person_id}, horario: 'No definido', numero: 'No definido'")
+                cursor.execute("""
+                    INSERT INTO empleado (idpersona, horario, numero) VALUES (%s, %s, %s)
+                """, (person_id, 'No definido', 'No definido'))
+
+            else:
+                print("Rol no válido o no se cumple ninguna condición")
+        else:
+            print("No se encontró el rol para la persona")
+
+        # Confirmar la transacción
+        connection.commit()
+        return jsonify({"message": "Usuario registrado exitosamente"}), 201
+
+    except Exception as e:
+        print(f"Error: {e}")
+        connection.rollback()  # Hacer rollback en caso de error
+        return jsonify({"message": "Error al registrar usuario", "error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
 
 
 
@@ -57,7 +127,9 @@ def agregarEjercicio():
     nombreEjer = data.get('nombreEjer')
     repeticiones = data.get('repeticiones')
     levantamientos = data.get('levantamientos')
-    idrutina = data.get('idrutina')
+    objetivo = data.get('objetivo')
+    descripcion = data.get('descripcion')
+    imagen_ejercicio = data.get('imagen_ejercicio')
     
 
     # Conectar a la base de datos
@@ -66,9 +138,9 @@ def agregarEjercicio():
 
     # Insertar el ejercicio en la tabla
     cursor.execute("""
-        INSERT INTO ejercicio (nombreEjer, repeticiones, levantamientos, idrutina)
-        VALUES (%s, %s, %s, %s)
-    """, (nombreEjer, repeticiones, levantamientos, idrutina))
+        INSERT INTO ejercicio (nombreEjer, repeticiones, levantamientos, objetivo,descripcion,imagen_ejercicio)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (nombreEjer, repeticiones, levantamientos, objetivo,descripcion,imagen_ejercicio))
 
     # Confirmar la transacción y cerrar la conexión
     connection.commit()
@@ -76,6 +148,11 @@ def agregarEjercicio():
     connection.close()
 
     return jsonify({"message": "Ejercicio registrado exitosamente"}), 201
+
+
+
+
+
 
 
 
@@ -123,25 +200,23 @@ def actualizarEjercicio(id):
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Verificar si el ejercicio existe
-        cursor.execute('SELECT idRutina FROM ejercicio WHERE idEjercicio = %s', (id,))
-        ejercicio_actual = cursor.fetchone()
-
-        if not ejercicio_actual:
-            return jsonify({"error": "Ejercicio no encontrado"}), 404
+      
 
         # Obtener los datos del cuerpo de la solicitud
         data = request.json
         nombreEjer = data.get('nombreEjer')
         repeticiones = data.get('repeticiones')
         levantamientos = data.get('levantamientos')
+        objetivo = data.get('objetivo')
+        descripcion = data.get('descripcion')
+        imagen_ejercicio = data.get('imagen_ejercicio')
 
         # Actualizar el ejercicio, sin cambiar idRutina
         cursor.execute('''
             UPDATE ejercicio
-            SET nombreEjer = %s, repeticiones = %s, levantamientos = %s
+            SET nombreEjer = %s, repeticiones = %s, levantamientos = %s, objetivo =%s, descripcion =%s, imagen_ejercicio =%s
             WHERE idEjercicio = %s
-        ''', (nombreEjer, repeticiones, levantamientos, id))
+        ''', (nombreEjer, repeticiones, levantamientos,objetivo,descripcion,imagen_ejercicio, id))
 
         connection.commit()
         cursor.close()
@@ -152,6 +227,9 @@ def actualizarEjercicio(id):
     except Exception as e:
         print(f"Error al actualizar el ejercicio: {e}")
         return jsonify({"error": "Hubo un problema al actualizar el ejercicio"}), 500
+
+
+
 
 
 
@@ -236,9 +314,9 @@ def actualizarUsuario(id):
 
 #Login --------------------------------------------------------------------------------
 
+
 @app.route('/login', methods=['POST'])
 def login():
-
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
@@ -248,16 +326,37 @@ def login():
     cursor.execute('SELECT * FROM persona WHERE usuario = %s AND contra = %s', (username, password))
     
     record = cursor.fetchone()
-    print(record)
+    print(f"Registro encontrado: {record}")
 
     if record:
-        # If successful, create session and return success response
+        # Verificar si el usuario es un cliente
+        if record[3] == 'Cliente':  # Asumiendo que el rol 'cliente' está en la columna 3
+            # Obtener el idCliente relacionado con la persona
+            cursor.execute('SELECT idCliente FROM cliente WHERE idpersona = %s', (record[0],))
+            client_id = cursor.fetchone()
+            print(f"ID Cliente encontrado: {client_id}")
+
+            if client_id:
+                cursor.execute('SELECT estado FROM estadocuenta WHERE idCli = %s', (client_id[0],))
+                estado_cuenta = cursor.fetchone()
+                print(f"Estado de cuenta encontrado: {estado_cuenta}")
+                
+                if estado_cuenta:
+                    if estado_cuenta[0] == 'Denegado':
+                        response = {
+                            'message': 'Estado de cuenta denegado por falta de pago',
+                            'loggedin': False
+                        }
+                        connection.close()
+                        return jsonify(response), 403  # Forbidden
+
+        # Si todo está bien, iniciar sesión
         session['loggedin'] = True
         session['username'] = record[5]
-        session['role'] = record[3]   # Assuming record[5] contains the username
+        session['role'] = record[3]  # Suponiendo que el rol está en la columna 3
         session['id'] = record[0]
         response = {
-            'message': 'Login successful',
+            'message': 'Login exitoso',
             'username': session['username'],
             'role': session['role'],
             'id': session['id'],
@@ -267,19 +366,18 @@ def login():
         return jsonify(response), 200
 
     else:
-        # Login failed, return an error message
+        # Login fallido
         response = {
-            'message': 'Usuario o Contrasena incorrectos. Intente de nuevo.',
+            'message': 'Usuario o Contraseña incorrectos. Intente de nuevo.',
             'loggedin': False
         }
         return jsonify(response), 401  # Unauthorized
 
-
-
-
+ 
+ 
 # Backend para mostrar tablas --------------------------------------------------------------------------------
-
-
+ 
+   
 @app.route('/verClientes', methods=["GET"])
 def verClientes():
     try:
@@ -324,7 +422,7 @@ def verClientes():
 
 
 
-
+ 
 
 @app.route('/verEmpleados', methods=["GET"])
 def verEmpleados():
@@ -369,18 +467,21 @@ def verEmpleados():
         return jsonify({"message": "Error al conectar con la base de datos", "error": str(e)}), 500
 
 
-#Ver Ejercicios para BAJAR DE PESO
 
 
-@app.route('/verEjerciciosBP', methods=["GET"])
-def verEjerciciosBP():
+
+
+#Ver Ejercicios
+
+@app.route('/verEjercicios', methods=["GET"])
+def verEjercicios():
     try:
         # Conectar a la base de datos
         connection = get_db_connection()
         cursor = connection.cursor()
 
         # Ejecutar la consulta para obtener todas las personas con rol "Cliente"
-        cursor.execute('SELECT * FROM ejercicio WHERE idrutina = %s', ('1',))
+        cursor.execute('SELECT * FROM ejercicio')
 
         # Obtener todos los resultados de la consulta
         ejercicios = cursor.fetchall()
@@ -397,7 +498,9 @@ def verEjerciciosBP():
                 'nombreEjer': ejercicio[1],
                 'repeticiones': ejercicio[2],
                 'levantamientos': ejercicio[3],
-                'idrutina': ejercicio[4],
+                'objetivo': ejercicio[4],
+                'descripcion': ejercicio[5],
+                'imagen_ejercicio': ejercicio[6]
                 
             })
 
@@ -414,49 +517,6 @@ def verEjerciciosBP():
 
 
 
-#Ver Ejercicios para SUBIR MASA
-
-
-
-@app.route('/verEjerciciosSM', methods=["GET"])
-def verEjerciciosSM():
-    try:
-        # Conectar a la base de datos
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        # Ejecutar la consulta para obtener todas las personas con rol "Cliente"
-        cursor.execute('SELECT * FROM ejercicio WHERE idrutina = %s', ('2',))
-
-        # Obtener todos los resultados de la consulta
-        ejercicios = cursor.fetchall()
-
-        # Verificar si no hay personas con rol "Cliente"
-        if not ejercicios:
-            return jsonify({"message": "No hay Ejercicios en la base de datos"}), 404
-
-        # Crear una lista de diccionarios para representar cada cliente
-        resultado = []
-        for ejercicio in ejercicios:
-            resultado.append({
-                'id': ejercicio[0],
-                'nombreEjer': ejercicio[1],
-                'repeticiones': ejercicio[2],
-                'levantamientos': ejercicio[3],
-                'idrutina': ejercicio[4],
-                
-            })
-
-        # Cerrar cursor y conexión
-        cursor.close()
-        connection.close()
-
-        # Devolver los datos en formato JSON
-        return jsonify({"data": resultado, "message": "Ejercicios obtenidos correctamente"}), 200
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"message": "Error al conectar con la base de datos", "error": str(e)}), 500
 
 
 
@@ -598,6 +658,12 @@ def get_user(user_id):
         print(f"User with ID {user_id} not found.")
         return jsonify({"error": "User not found"}), 404
     
+
+
+
+
+
+
 @app.route('/api/upload', methods=['POST'])
 def upload_profile():
     conn = None
@@ -673,26 +739,39 @@ def upload_profile():
 
 
 
-
-
-
-
-
-
 @app.route('/api/eliminarUsuario/<int:id>', methods=['DELETE'])
 def eliminarUsuario(id):
-    print(f"Intentando eliminar Persona con id: {id}")  # Para verificar que se pasa el id
+    print(f"Intentando eliminar Persona con id: {id}")  
     try:
-        # Conectar a la base de datos
+   
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
-        cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
+        cursor.execute('SELECT idCliente FROM cliente WHERE idpersona = %s', (id,))
+        cliente = cursor.fetchone()  # Obtener el resultado de la consulta
+        client_id = cliente[0] if cliente else None
+        print(f"Id de cliente: {client_id}")
 
-        # Verificar si se eliminó algún registro
-        if cursor.rowcount == 0:
-            return jsonify({"error": "id no encontrado"}), 404
+        # Verificar si el id pertenece a un empleado
+        cursor.execute('SELECT idpersona FROM empleado WHERE idpersona = %s', (id,))
+        empleado = cursor.fetchone()
+
+        if cliente:  # Si es un cliente
+            # Primero, eliminar los registros en estadocuenta
+            cursor.execute('DELETE FROM estadocuenta WHERE idCli = %s', (client_id,))
+
+            # Luego, eliminar el cliente
+            cursor.execute('DELETE FROM cliente WHERE idpersona = %s', (id,))
+
+        elif empleado:  # Si es un empleado
+            # Eliminar el empleado
+            cursor.execute('DELETE FROM empleado WHERE idpersona = %s', (id,))
+
+        else:
+            return jsonify({"error": "Usuario no encontrado en cliente ni empleado"}), 404
+
+        # Eliminar la persona (después de cliente o empleado)
+        cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
 
         # Confirmar la transacción
         connection.commit()
@@ -701,11 +780,12 @@ def eliminarUsuario(id):
         cursor.close()
         connection.close()
 
-        return jsonify({"message": f"id con id {id} id exitosamente"}), 200
+        return jsonify({"message": f"Usuario con id {id} eliminado exitosamente"}), 200
 
     except Exception as e:
-        print(f"Error al eliminar el id: {e}")
-        return jsonify({"error": "Hubo  un problema al eliminar el id"}), 500
+        print(f"Error al eliminar el usuario: {e}")
+        return jsonify({"error": "Hubo un problema al eliminar el usuario"}), 500
+
 
 
 
@@ -820,6 +900,65 @@ def get_user(user_id):
 def serve_images(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+
+
+
+
+# Función para enviar el correo
+def send_email(to_email, username, password):
+    from_email = "flexf9095@gmail.com"  # Usa tu correo de Gmail
+    from_password = "vfxu ppit pmum nkgd"  # Tu contraseña de Gmail
+
+    # Configuración del servidor SMTP de Gmail
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login(from_email, from_password)
+
+    # Crear el mensaje
+    subject = "Gracias por registrarte en Flex Fitness"
+    body = f"Hola, gracias por suscribirte a Flex Fitness. Tu usuario es: {username} y tu contraseña es: {password}"
+
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Enviar el correo
+    server.sendmail(from_email, to_email, msg.as_string())
+    server.quit()
+
+
+
+
+
+
+#ACTUALIZAR ESTADOS DE CUENTAS
+
+def validar_estados_al_inicio():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        
+        cursor.execute("""
+            UPDATE estadocuenta
+            SET estado = 'Denegado'
+            WHERE estado = 'Aprobado'
+            AND DATEDIFF(NOW(), fecha) > 30;
+        """)
+        connection.commit()
+        print("Estados actualizados exitosamente al iniciar el servidor.")
+    except Exception as e:
+        print(f"Error al actualizar estados al inicio del servidor: {e}")
+        connection.rollback()
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+
+if __name__ == "__main__":
+    validar_estados_al_inicio()  # Ejecutar la validación al arrancar
 @app.route('/api/get_exercises', methods=['GET'])
 def get_exercises():
     connection = get_db_connection()
@@ -836,6 +975,7 @@ def get_exercises():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 # --------------------------------------------------------------------------------

@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./Components/PrivateRoute";
 import Contacto from "./componentesMenu/Mapa";
+import MenuAdminEmpleado from "./componentesMenu/MenuAdminEmpleado";
 // Use React.lazy to load the components lazily
 const Login = lazy(() => import('./Components/LoginForm'));
 const MenuAdmin = lazy(() => import('./componentesMenu/MenuAdmin'));
@@ -18,6 +19,12 @@ const LoadingSpinner = () => (
     <div className="w-16 h-16 border-4 border-t-4 border-gray-300 border-t-teal-500 rounded-full animate-spin"></div>
   </div>
 );
+import MenuEjercicioAdmin from './componentesMenu/MenuEjercicioAdmin'
+import MenuRecoAlimenAdmin from "./componentesMenu/MenuRecoAlimenAdmin";
+import NutritionGuide from "./componentesMenu/DietaClient";
+import Dashboard from "./componentesMenu/MenuPrincipalCliente";
+import UserProfile from "./componentesMenu/PerfilUsuarioCliente";
+import MenuAdminEmpleado from "./componentesMenu/MenuAdminEmpleado";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -55,6 +62,14 @@ function App() {
           }
         />
 
+        <Route
+          path="/componentesMenu/MenuAdminEmpleado"
+          element={
+            <PrivateRoute>
+              <MenuAdminEmpleado />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/componentesMenu/MenuEjercicioAdmin"
           element={
