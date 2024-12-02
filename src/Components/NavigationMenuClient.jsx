@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import './NavBarClient.css'; // Include custom CSS for spinner and transitions
@@ -8,13 +8,32 @@ function NavBarClient() {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        sessionStorage.clear();
-        navigate('/');
+        localStorage.setItem('logout', Date.now());
+        localStorage.clear();
+        navigate('/'); // Redirect to login after clearing session
     };
+    useEffect(() => {
+        const handleStorageChange = () => {
+          if (!localStorage.getItem('logout')) {
+            // If logout timestamp doesn't exist, navigate to login page
+            navigate('/');
+          }
+        };
+    
+        // Listen to changes in localStorage
+        window.addEventListener('storage', handleStorageChange);
+    
+        // Cleanup the event listener when the component unmounts
+        return () => {
+          window.removeEventListener('storage', handleStorageChange);
+        };
+      }, [navigate]);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen); // Toggle the menu open/close
     };
+
+    
 
     return (
         <nav className="bg-[#3D3E3D] shadow-lg loaded">

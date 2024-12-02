@@ -24,10 +24,10 @@ const StatCard = ({ value, label }) => {
 // Main Component
 const Dashboard = () => {
   return (
-    <div>
+    <div className='bg-black min-h-screen'>
       <NavBarClient />
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 ">
 
         <div className="bg-white rounded-lg shadow-lg p-6">
 

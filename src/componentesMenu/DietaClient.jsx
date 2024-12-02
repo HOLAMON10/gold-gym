@@ -1,157 +1,159 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NavBarClient from '../Components/NavigationMenuClient';
 
 const NutritionGuide = () => {
+  const goals = [
+    {
+      title: 'Weight Loss',
+      icon: '⚖️',
+      recommendations: [
+        {
+          caloriesMin: 1200,
+          caloriesMax: 1500,
+          protein: '30%',
+          carbs: '40%',
+          fats: '30%',
+          activityLevel: 'Sedentary',
+          recommendation: 'Reduce calorie intake and increase physical activity. Focus on protein-rich foods and fiber to stay full longer.',
+          color: 'bg-blue-800'
+        },
+        {
+          caloriesMin: 1500,
+          caloriesMax: 1800,
+          protein: '30%',
+          carbs: '40%',
+          fats: '30%',
+          activityLevel: 'Active',
+          recommendation: 'Maintain a moderate calorie deficit with regular exercise. Prioritize lean proteins and complex carbs.',
+          color: 'bg-blue-800'
+        },
+      ]
+    },
+    {
+      title: 'Muscle Gain',
+      icon: '💪',
+      recommendations: [
+        {
+          caloriesMin: 2500,
+          caloriesMax: 3000,
+          protein: '30%',
+          carbs: '45%',
+          fats: '20%',
+          activityLevel: 'Moderate',
+          recommendation: 'Increase calorie intake and focus on protein-rich foods to support muscle growth. Combine with strength training.',
+          color: 'bg-yellow-800'
+        },
+        {
+          caloriesMin: 3000,
+          caloriesMax: 3500,
+          protein: '35%',
+          carbs: '45%',
+          fats: '20%',
+          activityLevel: 'Very Active',
+          recommendation: 'Consume a higher calorie surplus for accelerated muscle gain. Focus on complex carbs and protein.',
+          color: 'bg-yellow-800'
+        },
+      ]
+    },
+    {
+      title: 'Muscle Definition',
+      icon: '🏆',
+      recommendations: [
+        {
+          caloriesMin: 2000,
+          caloriesMax: 2500,
+          protein: '40%',
+          carbs: '35%',
+          fats: '25%',
+          activityLevel: 'Active',
+          recommendation: 'Focus on reducing body fat while maintaining muscle. Higher protein and moderate carbs will help with muscle definition.',
+          color: 'bg-indigo-800'
+        },
+        {
+          caloriesMin: 2200,
+          caloriesMax: 2700,
+          protein: '45%',
+          carbs: '30%',
+          fats: '25%',
+          activityLevel: 'Very Active',
+          recommendation: 'Slight calorie deficit with a focus on high-protein foods and strength training to maintain muscle while losing fat.',
+          color: 'bg-indigo-800'
+        },
+      ]
+    },
+    // Add additional categories here...
+  ];
+
+  // Modal state and selected recommendation
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRecommendation, setSelectedRecommendation] = useState(null);
+
+  // Open modal with selected recommendation
+  const openModal = (recommendation) => {
+    setSelectedRecommendation(recommendation);
+    setIsModalOpen(true);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedRecommendation(null);
+  };
+
   return (
-    <div className="bg-gray-100">
-        <NavBarClient/>
-      {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Guía Básica de Nutrición</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">Conoce los fundamentos de la nutrición y cómo cada macronutriente contribuye a tu salud y objetivos fitness.</p>
+    <div>
+      <NavBarClient/>
+      <div className="bg-[#1c1c1c] min-h-screen flex flex-col items-center py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <h1 className="text-4xl sm:text-5xl font-bold text-white mb-8 text-center">Nutritional Recommendations</h1>
+
+        {/* Grid Layout for 1 item per row on mobile, 2 items for tablets, and 3 items for larger screens */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
+          {goals.map((goal, index) => (
+            <div key={index} className="space-y-6">
+              <h2 className="text-xl sm:text-2xl font-semibold text-white text-center mb-4">{goal.icon} {goal.title}</h2>
+
+              {/* Display multiple recommendations for each goal */}
+              {goal.recommendations.map((rec, idx) => (
+                <div
+                  key={idx}
+                  className={`p-4 sm:p-6 rounded-lg shadow-lg hover:scale-105 transition-all transform ${rec.color} cursor-pointer`}
+                  onClick={() => openModal(rec)} // Open modal when clicked
+                >
+                  <h3 className="text-lg sm:text-xl font-semibold text-center text-white">{rec.activityLevel} Focus</h3>
+                  <div className="mt-4 text-xs sm:text-sm text-white">
+                    <p><strong>Calories:</strong> {rec.caloriesMin} - {rec.caloriesMax} kcal</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
 
-        {/* Nutrition Information Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="h-3 bg-red-500"></div>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-800">Proteínas</h3>
+        {/* Modal Popup for Detailed Information */}
+        {isModalOpen && selectedRecommendation && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+            <div className="bg-[#2b2b2b] p-6 sm:p-8 rounded-lg w-80 sm:w-96 max-w-full">
+              <h2 className="text-xl sm:text-2xl font-semibold text-center text-white">{selectedRecommendation.icon} {selectedRecommendation.title}</h2>
+              <div className="mt-4 text-xs sm:text-sm text-white">
+                <p><strong>Calories:</strong> {selectedRecommendation.caloriesMin} - {selectedRecommendation.caloriesMax} kcal</p>
+                <p><strong>Protein:</strong> {selectedRecommendation.protein}</p>
+                <p><strong>Carbs:</strong> {selectedRecommendation.carbs}</p>
+                <p><strong>Fats:</strong> {selectedRecommendation.fats}</p>
+                <p><strong>Activity Level:</strong> {selectedRecommendation.activityLevel}</p>
+                <p className="mt-4">{selectedRecommendation.recommendation}</p>
               </div>
-              <div className="space-y-4">
-                <p className="text-gray-600">Las proteínas son esenciales para:</p>
-                <ul className="text-gray-600 space-y-2">
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                    Construcción muscular
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                    Recuperación tisular
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                    Función inmune
-                  </li>
-                </ul>
-                <div className="mt-4 p-4 bg-red-50 rounded-lg">
-                  <p className="text-sm text-red-800">Consumo recomendado: 1.6-2.2g/kg de peso corporal</p>
-                </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeModal}
+                  className="bg-gray-800 text-white px-6 py-2 rounded-full hover:bg-gray-700"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="h-3 bg-yellow-500"></div>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-800">Carbohidratos</h3>
-              </div>
-              <div className="space-y-4">
-                <p className="text-gray-600">Los carbohidratos son importantes para:</p>
-                <ul className="text-gray-600 space-y-2">
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                    Energía inmediata
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                    Rendimiento deportivo
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                    Función cerebral
-                  </li>
-                </ul>
-                <div className="mt-4 p-4 bg-yellow-50 rounded-lg">
-                  <p className="text-sm text-yellow-800">Consumo recomendado: 3-5g/kg de peso corporal</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="h-3 bg-green-500"></div>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-800">Grasas</h3>
-              </div>
-              <div className="space-y-4">
-                <p className="text-gray-600">Las grasas son necesarias para:</p>
-                <ul className="text-gray-600 space-y-2">
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                    Absorción de vitaminas
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                    Producción hormonal
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                    Salud cerebral
-                  </li>
-                </ul>
-                <div className="mt-4 p-4 bg-green-50 rounded-lg">
-                  <p className="text-sm text-green-800">Consumo recomendado: 0.8-1g/kg de peso corporal</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Hidratación</h3>
-            <div className="flex items-center mb-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                </svg>
-              </div>
-              <div>
-                <p className="text-gray-600">Consumo diario recomendado:</p>
-                <p className="text-blue-600 font-bold">30-35 ml/kg de peso corporal</p>
-              </div>
-            </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-blue-800">Aumentar la ingesta durante el ejercicio y en climas cálidos</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Micronutrientes Esenciales</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <h4 className="font-bold text-purple-800 mb-2">Vitaminas</h4>
-                <ul className="text-sm text-purple-600 space-y-1">
-                  <li>• Vitamina D</li>
-                  <li>• Complejo B</li>
-                  <li>• Vitamina C</li>
-                </ul>
-              </div>
-              <div className="bg-orange-50 p-4 rounded-lg">
-                <h4 className="font-bold text-orange-800 mb-2">Minerales</h4>
-                <ul className="text-sm text-orange-600 space-y-1">
-                  <li>• Hierro</li>
-                  <li>• Zinc</li>
-                  <li>• Magnesio</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
-
-      {/* Footer */}
-      <footer className="bg-white mt-12 py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-600">
-          <p>© 2024 NutriGuía. Consulta con un profesional de la salud antes de realizar cambios en tu dieta.</p>
-        </div>
-      </footer>
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './MenuAdmin.css';
-import NavigationMenu from "../Components/NavigationMenuEmpAdmin";
+
 import FormCrearRecoAlimen from './FormCrearRecoAlimen';
+import NavBar from '../Components/NavigationMenuEmpAdmin';
 
 function MenuRecoAlimenAdmin() {
     const [RecoAlimen, setRecoAlimen] = useState([]);
@@ -117,7 +118,7 @@ function MenuRecoAlimenAdmin() {
 
     return (
         <div>
-            <NavigationMenu />
+            <NavBar />
 
             <div id="menu-admin-container">
 
