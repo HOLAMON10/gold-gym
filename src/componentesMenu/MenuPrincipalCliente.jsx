@@ -24,7 +24,11 @@ const StatCard = ({ value, label }) => {
 // Main Component
 const Dashboard = () => {
   return (
-    <div className='bg-black min-h-screen'>
+    <div className="bg-[#292929] min-h-screen"style={{
+      backgroundColor: '#292929', // Base background color
+      backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
+      backgroundSize: '10px 10px' // CSS pattern
+    }}>
       <NavBarClient />
 
       <div className="max-w-7xl mx-auto px-4 py-8 ">

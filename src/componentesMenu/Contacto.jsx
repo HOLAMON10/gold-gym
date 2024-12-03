@@ -10,10 +10,14 @@ const ContactPage = () => {
   };
 
   return (
-    <div>
+    <div className="bg-[#292929] min-h-screen"style={{
+      backgroundColor: '#292929', // Base background color
+      backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
+      backgroundSize: '10px 10px' // CSS pattern
+    }}>
       <NavBarClient/>
 
-      <div className="bg-[#333333] min-h-screen py-10 px-4">
+      <div className="py-10 px-4">
         <h1 className="text-4xl font-bold text-center text-white mb-8">Contact Us</h1>
 
 

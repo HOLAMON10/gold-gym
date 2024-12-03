@@ -39,7 +39,6 @@ const UserProfile = () => {
             edad: data.edad,
             imagen: data.imagen
           });
-          console.log("User data fetched:", data);
           setPreview(data.persona_imagen);
         } else {
           setAlertSeverity("error");
@@ -47,7 +46,6 @@ const UserProfile = () => {
           setAlertOpen(true);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
         setAlertSeverity("error");
         setAlertMessage("An error occurred while fetching user data.");
         setAlertOpen(true);
@@ -76,7 +74,7 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
-    const userId = sessionStorage.getItem("id");
+    const userId = localStorage.getItem("id");
     if (!userId) {
       setAlertSeverity("error");
       setAlertMessage("User not logged in.");
@@ -109,21 +107,16 @@ const UserProfile = () => {
 
       if (response.ok) {
         const updatedUser = await response.json();
-       
         setUserData(updatedUser);
         if(updatedUser.persona_imagen) setPreview(updatedUser.persona_imagen);
-        setUserData(userData)
         setAlertSeverity("success");
         setAlertMessage("User information saved successfully!");
         setAlertOpen(true)
-
-        
       } else {
         setAlertSeverity("error");
         setAlertMessage("Failed to save user information.");
       }
     } catch (error) {
-      console.error("Error saving user information:", error);
       setAlertSeverity("error");
       setAlertMessage("An error occurred while saving user information.");
     } finally {
@@ -132,14 +125,18 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="bg-[#333333] min-h-screen">
+    <div className="bg-[#292929] min-h-screen" style={{
+      backgroundColor: '#292929',
+      backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
+      backgroundSize: '10px 10px'
+    }}>
       <NavBarClient />
       
-      <div className="max-w-4xl mx-auto py-8 px-4">
-        <div className="bg-[#1F1F1F] rounded-lg shadow-lg p-6 mb-6">
+      <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-12">
+        <div className="bg-[#1F1F1F] rounded-lg shadow-lg p-4 sm:p-6 mb-6">
           <div className="flex flex-col items-center">
             {image ? (
-              <div className="relative w-full" style={{ height: "400px" }}>
+              <div className="relative w-full" style={{ height: "300px" }}>
                 <Cropper
                   image={image}
                   crop={crop}
@@ -151,7 +148,7 @@ const UserProfile = () => {
                 />
               </div>
             ) : (
-              <div className="w-32 h-32 bg-gray-300 rounded-full mb-4 overflow-hidden">
+              <div className="w-32 h-32 sm:w-48 sm:h-48 bg-gray-300 rounded-full mb-4 overflow-hidden">
                 {preview ? (
                   <img
                     src={`/images/${preview}`}
@@ -183,42 +180,41 @@ const UserProfile = () => {
           </div>
         </div>
 
-        {/* Personal Information */}
-        <div className="bg-[#1F1F1F] rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-bold  mb-4 text-[#F7F7F7]">Personal Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-[#1F1F1F] rounded-lg shadow-lg p-4 sm:p-8 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 text-[#F7F7F7]">Personal Information</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
             <div>
-              <label className="block text-sm font-medium  mb-1 text-[#F7F7F7]">Full Name</label>
+              <label className="block text-sm sm:text-base font-medium mb-2 text-[#F7F7F7]">Full Name</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#577399] focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]" 
+                className="w-full px-4 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#577399] focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]" 
                 value={userData.nombre}
                 onChange={(e) => setUserData({ ...userData, nombre: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium  mb-1 text-[#F7F7F7]">Username</label>
+              <label className="block text-sm sm:text-base font-medium mb-2 text-[#F7F7F7]">Username</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
+                className="w-full px-4 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
                 value={userData.usuario}
                 onChange={(e) => setUserData({ ...userData, usuario: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium  mb-1 text-[#F7F7F7]">Email</label>
+              <label className="block text-sm sm:text-base font-medium mb-2 text-[#F7F7F7]">Email</label>
               <input
                 type="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
+                className="w-full px-4 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
                 value={userData.correo}
                 onChange={(e) => setUserData({ ...userData, correo: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-[#F7F7F7]">Age</label>
+              <label className="block text-sm sm:text-base font-medium mb-2 text-[#F7F7F7]">Age</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
+                className="w-full px-4 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-[#577399] bg-[#1F1F1F] text-[#F7F7F7]"
                 value={userData.edad}
                 onChange={(e) => setUserData({ ...userData, edad: e.target.value })}
               />
@@ -229,31 +225,31 @@ const UserProfile = () => {
         <div className="mt-4 flex justify-center">
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md shadow-md hover:bg-indigo-700"
+            className="px-6 py-3 bg-indigo-600 text-white rounded-md shadow-md hover:bg-indigo-700"
           >
             Save Changes
           </button>
         </div>
       </div>
+
       <Snackbar
         open={alertOpen}
         autoHideDuration={600}
         onClose={() => setAlertOpen(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         style={{marginTop:'3%'}} 
-       
       >
         <Alert
           onClose={() => setAlertOpen(false)}
           severity={alertSeverity}
           icon={<CheckIcon fontSize="inherit" />}
           sx={{
-            backgroundColor: alertSeverity === 'success' ? '#169873' : alertSeverity === 'error' ? '#f44336' : '#ff9800', // Custom background colors for success, error, or warning
-            color: 'white', // White text for better contrast
-            borderRadius: '8px', // Rounded corners
-            fontWeight: 'bold', // Bold text
-            boxShadow: 2, // Light shadow for elevation effect
-            padding: '16px 24px', // Padding for better spacing
+            backgroundColor: alertSeverity === 'success' ? '#169873' : alertSeverity === 'error' ? '#f44336' : '#ff9800', 
+            color: 'white', 
+            borderRadius: '8px', 
+            fontWeight: 'bold',
+            boxShadow: 2, 
+            padding: '16px 24px',
           }}
         >
           {alertMessage}
