@@ -19,12 +19,7 @@ const LoadingSpinner = () => (
     <div className="w-16 h-16 border-4 border-t-4 border-gray-300 border-t-teal-500 rounded-full animate-spin"></div>
   </div>
 );
-import MenuEjercicioAdmin from './componentesMenu/MenuEjercicioAdmin'
-import MenuRecoAlimenAdmin from "./componentesMenu/MenuRecoAlimenAdmin";
-import NutritionGuide from "./componentesMenu/DietaClient";
-import Dashboard from "./componentesMenu/MenuPrincipalCliente";
-import UserProfile from "./componentesMenu/PerfilUsuarioCliente";
-import MenuAdminEmpleado from "./componentesMenu/MenuAdminEmpleado";
+
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
