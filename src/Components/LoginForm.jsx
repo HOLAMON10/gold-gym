@@ -24,10 +24,10 @@ function Login() {
             if (response && response.data) {
                 setMessage(response.data.message);
 
-                localStorage.setItem("isLoggedIn", true);
-                localStorage.setItem("role", response.data.role);
-                localStorage.setItem("username", response.data.username);
-                localStorage.setItem("id", response.data.id)
+                sessionStorage.setItem("isLoggedIn", true);
+                sessionStorage.setItem("role", response.data.role);
+                sessionStorage.setItem("username", response.data.username);
+                sessionStorage.setItem("id", response.data.id)
                
 
                 if (response.data.role === 'Cliente') {

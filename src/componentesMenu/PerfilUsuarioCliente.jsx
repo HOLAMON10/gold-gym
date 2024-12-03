@@ -25,7 +25,7 @@ const UserProfile = () => {
   const [alertSeverity, setAlertSeverity] = useState("success");
 
   useEffect(() => {
-    const userId = localStorage.getItem("id");
+    const userId = sessionStorage.getItem("id");
 
     const fetchUserData = async () => {
       try {
