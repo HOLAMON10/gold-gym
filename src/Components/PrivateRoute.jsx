@@ -3,8 +3,8 @@ import { Navigate, useLocation  } from 'react-router-dom';
 
 function PrivateRoute({ allowedRoles, children } ) {
     // Check if the user is logged in by reading from sessionStorage
-    const isAuthenticated = sessionStorage.getItem('isLoggedIn'); 
-    const userRole = sessionStorage.getItem('role'); // Get the user's role from sessionStorage
+    const isAuthenticated = localStorage.getItem('isLoggedIn'); 
+    const userRole = localStorage.getItem('role'); // Get the user's role from sessionStorage
     const location = useLocation();
 
    

@@ -49,7 +49,7 @@ function FormCrearUsuario() {
             correo,
             edad
         };
-
+        
         // Hacer la petición al backend
         fetch('http://localhost:5000/api/register', {
             method: 'POST',

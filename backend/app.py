@@ -955,10 +955,6 @@ def validar_estados_al_inicio():
         connection.close()
 
 
-
-
-if __name__ == "__main__":
-    validar_estados_al_inicio()  # Ejecutar la validación al arrancar
 @app.route('/api/get_exercises', methods=['GET'])
 def get_exercises():
     connection = get_db_connection()
@@ -972,6 +968,33 @@ def get_exercises():
     connection.close()
 
     return jsonify(exercises)
+
+@app.route('/api/favorite_exercise', methods=['POST'])
+def favorite_exercise():
+    data = request.json
+    id_cliente = data.get('id_cliente')
+    id_ejercicio = data.get('id_ejercicio')
+    print(id_cliente)
+    print(id_ejercicio)
+
+
+    # Check if the exercise is already in favorites
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM rutinapersonalizada WHERE id_persona = %s AND id_ejercicio = %s", (id_cliente, id_ejercicio))
+    result = cursor.fetchone()
+
+    if result:
+        # If the exercise is already in favorites, delete it
+        cursor.execute("DELETE FROM rutinapersonalizada WHERE id_persona = %s AND id_ejercicio = %s", (id_cliente, id_ejercicio))
+        connection.commit()
+        return jsonify({"message": "Exercise removed from favorites"}), 200
+    else:
+        # If the exercise is not in favorites, add it
+        cursor.execute("INSERT INTO rutinapersonalizada (id_persona, id_ejercicio) VALUES (%s, %s)", (id_cliente, id_ejercicio))
+        connection.commit()
+        return jsonify({"message": "Exercise added to favorites"}), 201
+
 
 if __name__ == '__main__':
     app.run(debug=True)

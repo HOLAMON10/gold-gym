@@ -64,14 +64,39 @@ const Rutinas = () => {
         return acc;
     }, {});
 
-    const handleFavoriteToggle = (exercise) => {
-        setFavoriteExercises((prevFavorites) => {
-            if (prevFavorites.includes(exercise.nombreEjer)) {
-                return prevFavorites.filter((name) => name !== exercise.nombreEjer);
+    const handleFavoriteToggle = async (exercise) => {
+        const id_cliente = localStorage.getItem("id");  // Assuming the client ID is stored in localStorage
+        console.log(id_cliente)
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/favorite_exercise", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id_cliente,
+                    id_ejercicio: exercise.idEjercicio,  // Assuming exercise object has id_ejercicio
+                }),
+            });
+
+            if (response.ok) {
+                const message = await response.json();
+
+                // Update favorite exercises based on the response
+                setFavoriteExercises((prevFavorites) => {
+                    if (message.message === "Exercise added to favorites") {
+                        return [...prevFavorites, exercise.nombreEjer];
+                    } else if (message.message === "Exercise removed from favorites") {
+                        return prevFavorites.filter((name) => name !== exercise.nombreEjer);
+                    }
+                    return prevFavorites;
+                });
             } else {
-                return [...prevFavorites, exercise.nombreEjer];
+                console.error("Error saving favorite exercise");
             }
-        });
+        } catch (error) {
+            console.error("Error toggling favorite:", error);
+        }
     };
 
     const closeFilterModal = (e) => {
@@ -85,7 +110,7 @@ const Rutinas = () => {
             backgroundColor: '#292929', // Base background color
             backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
             backgroundSize: '10px 10px' // CSS pattern
-          }}>
+        }}>
             <NavBarClient />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 flex flex-col lg:flex-row">
                 {/* Filter Button ONLY on Mobile and iPad */}
@@ -116,8 +141,8 @@ const Rutinas = () => {
                                     key={objective}
                                     onClick={() => toggleObjective(objective)}
                                     className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-200 ${selectedObjectives.includes(objective)
-                                            ? "bg-teal-700 text-white"
-                                            : "bg-[#292929] text-gray-300 hover:bg-teal-600"
+                                        ? "bg-teal-700 text-white"
+                                        : "bg-[#292929] text-gray-300 hover:bg-teal-600"
                                         }`}
                                 >
                                     <span className="text-lg">{objective}</span>
