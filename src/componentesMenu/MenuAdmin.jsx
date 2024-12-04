@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './MenuAdmin.css';
-import NavigationMenu from "../Components/NavigationMenuEmpAdmin";
 import FormCrearUsuario from "./FormCrearUsuario";
+import NavBar from '../Components/NavigationMenuEmpAdmin';
 
 
 function MenuAdmin() {
@@ -123,7 +123,7 @@ function MenuAdmin() {
 
     return (
         <div>
-            <NavigationMenu />
+            <NavBar/>
             <div id="menu-admin-container">
                 <br />
                 <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Clientes</h2>
