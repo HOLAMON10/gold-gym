@@ -117,13 +117,42 @@ function MenuAdmin() {
     };
 
 
+    const handleActualizarSuscripcion = (id) => {
+        fetch(`http://localhost:5000/api/actualizarSuscripcion/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                estado: 'Aprobado',
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Suscripción actualizada correctamente');
+                    setClientes(prevClientes =>
+                        prevClientes.map(cliente =>
+                            cliente.id === id ? { ...cliente, estado: 'Aprobado' } : cliente
+                        )
+                    );
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar la suscripción:', error);
+                alert('Hubo un error al actualizar la suscripción');
+            });
+    };
+
 
 
 
 
     return (
         <div>
-            <NavBar/>
+            <NavBar />
             <div id="menu-admin-container">
                 <br />
                 <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Clientes</h2>
@@ -132,7 +161,7 @@ function MenuAdmin() {
                         <tr>
                             <th>Nombre</th>
                             <th>Cédula</th>
-                            <th>Tipo Usuario</th>
+                            
                             <th>Usuario</th>
                             <th>Contraseña</th>
                             <th>Correo</th>
@@ -149,7 +178,7 @@ function MenuAdmin() {
 
                                     <td>{cliente.nombre}</td>
                                     <td>{cliente.cedula}</td>
-                                    <td>{cliente.rol}</td>
+                                
                                     <td>{cliente.usuario}</td>
                                     <td>{cliente.contra}</td>
                                     <td>{cliente.correo}</td>
@@ -170,6 +199,16 @@ function MenuAdmin() {
                                             Eliminar
                                         </button>
                                     </td>
+                                    <td>
+                                        <button
+                                            style={{ backgroundColor: '#000080', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
+                                            onClick={() => handleActualizarSuscripcion(cliente.id)}
+                                        >
+                                            Actualizar suscripción
+                                        </button>
+
+                                    </td>
+
 
 
                                 </tr>

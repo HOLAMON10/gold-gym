@@ -21,7 +21,13 @@ CORS(app, supports_credentials=True)
 
 
 
-# Funciones para registrar  --------------------------------------------------------------------------------
+
+
+
+#-------------------------------------CRUDS------------------------------------------
+
+
+# METODOS PARA AGREGAR --------------------------------------------------------------
 
 # Registrar Usuarios
 @app.route('/api/register', methods=['POST'])
@@ -95,6 +101,9 @@ def register_user():
                 cursor.execute("""
                     INSERT INTO empleado (idpersona, horario, numero) VALUES (%s, %s, %s)
                 """, (person_id, 'No definido', 'No definido'))
+               
+                send_email(correo, usuario, contra)
+
 
             else:
                 print("Rol no válido o no se cumple ninguna condición")
@@ -113,7 +122,6 @@ def register_user():
     finally:
         cursor.close()
         connection.close()
-
 
 
 
@@ -154,10 +162,6 @@ def agregarEjercicio():
 
 
 
-
-
-
-
 #Registrar Recomendacion Alimenticia 
 @app.route('/api/agregarRecoAlimen', methods=['POST'])
 def agregarRecoAlimen():
@@ -191,7 +195,7 @@ def agregarRecoAlimen():
 
 
 
-# Editar Registros  --------------------------------------------------------
+# Editar Registros  -------------------------------------------------------------
 
 @app.route('/api/actualizarEjercicio/<int:id>', methods=['PATCH'])
 def actualizarEjercicio(id):
@@ -233,7 +237,7 @@ def actualizarEjercicio(id):
 
 
 
-
+#Actualizar Recomendaciones Alimenticias
 @app.route('/api/actualizarRecoAlimen/<int:id>', methods=['PATCH'])
 def actualizarRecoAlimen(id):
     try:
@@ -272,7 +276,7 @@ def actualizarRecoAlimen(id):
 
 
 
-
+#Actualizar  Usuario
 @app.route('/api/actualizarUsuario/<int:id>', methods=['PATCH'])
 def actualizarUsuario(id):
     try:
@@ -312,9 +316,139 @@ def actualizarUsuario(id):
 
 
 
-#Login --------------------------------------------------------------------------------
+#METODOS PARA ELIMINAR REGITROS---------------------------------------------------------------
+
+#ELIMINAR USUARIO
+@app.route('/api/eliminarEjercicio/<int:id>', methods=['DELETE'])
+def eliminarEjercicio(id):
+    print(f"Intentando eliminar el ejercicio con id: {id}")  # Para verificar que se pasa el id
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
+        cursor.execute('DELETE FROM ejercicio WHERE idEjercicio = %s', (id,))
+
+        # Verificar si se eliminó algún registro
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Ejercicio no encontrado"}), 404
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"Ejercicio con id {id} eliminado exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el ejercicio: {e}")
+        return jsonify({"error": "Hubo  un problema al eliminar el ejercicio"}), 500
 
 
+
+
+
+
+#ELIMINAR RECOMENDACIONES ALIMENTICIAS
+@app.route('/api/eliminarRecoAlimen/<int:id>', methods=['DELETE'])
+def eliminarRecoAlimen(id):
+    print(f"Intentando eliminar el RecoAlimen con id: {id}")  # Para verificar que se pasa el id
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
+        cursor.execute('DELETE FROM recomendacionai WHERE idRA = %s', (id,))
+
+        # Verificar si se eliminó algún registro
+        if cursor.rowcount == 0:
+            return jsonify({"error": "RecoAlimen no encontrado"}), 404
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"RecoAlimen con id {id} RecoAlimen exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el RecoAlimen: {e}")
+        return jsonify({"error": "Hubo  un problema al eliminar el RecoAlimen"}), 500
+
+
+
+
+
+
+
+
+#ELIMINAR USUARIO
+@app.route('/api/eliminarUsuario/<int:id>', methods=['DELETE'])
+def eliminarUsuario(id):
+    print(f"Intentando eliminar Persona con id: {id}")  
+    try:
+   
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute('SELECT idCliente FROM cliente WHERE idpersona = %s', (id,))
+        cliente = cursor.fetchone()  # Obtener el resultado de la consulta
+        client_id = cliente[0] if cliente else None
+        print(f"Id de cliente: {client_id}")
+
+        # Verificar si el id pertenece a un empleado
+        cursor.execute('SELECT idpersona FROM empleado WHERE idpersona = %s', (id,))
+        empleado = cursor.fetchone()
+
+        if cliente:  # Si es un cliente
+            # Primero, eliminar los registros en estadocuenta
+            cursor.execute('DELETE FROM estadocuenta WHERE idCli = %s', (client_id,))
+
+            # Luego, eliminar el cliente
+            cursor.execute('DELETE FROM cliente WHERE idpersona = %s', (id,))
+
+        elif empleado:  # Si es un empleado
+            # Eliminar el empleado
+            cursor.execute('DELETE FROM empleado WHERE idpersona = %s', (id,))
+
+        else:
+            return jsonify({"error": "Usuario no encontrado en cliente ni empleado"}), 404
+
+        # Eliminar la persona (después de cliente o empleado)
+        cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
+
+        # Confirmar la transacción
+        connection.commit()
+
+        # Cerrar la conexión
+        cursor.close()
+        connection.close()
+
+        return jsonify({"message": f"Usuario con id {id} eliminado exitosamente"}), 200
+
+    except Exception as e:
+        print(f"Error al eliminar el usuario: {e}")
+        return jsonify({"error": "Hubo un problema al eliminar el usuario"}), 500
+
+
+
+
+
+
+
+
+#-----------------------------------------------------------------------------------------------------
+
+# FUNCIONAMIENTO LOGIN--------------------------------------------------------------------------------
+
+
+#LOGIN
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -375,9 +509,74 @@ def login():
 
  
  
-# Backend para mostrar tablas --------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+#LOGOUT
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()  # Clear the session
+    return jsonify({'message': 'Logged out successfully'}), 200
+
+
+upload_bp = Blueprint('upload', __name__)
+
+# Configure upload folder and allowed extensions
+UPLOAD_FOLDER = './gold-gym/public/images'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def process_and_save_image(file):
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+
+    # Save the file to the filesystem
+    file.save(filepath)
+
+    return filepath, filename
+
+
+
+
+
+#ACTUALIZAR ESTADOS DE CUENTAS PARA EL LOGIN
+def validar_estados_al_inicio():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        
+        cursor.execute("""
+            UPDATE estadocuenta
+            SET estado = 'Denegado'
+            WHERE estado = 'Aprobado'
+            AND DATEDIFF(NOW(), fecha) > 30;
+        """)
+        connection.commit()
+        print("Estados actualizados exitosamente al iniciar el servidor.")
+    except Exception as e:
+        print(f"Error al actualizar estados al inicio del servidor: {e}")
+        connection.rollback()
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+
+
+#-----------------------------------------------------------------------------------------------------
+# VISUALCION DE TABLAS--------------------------------------------------------------------------------
  
-   
+
+#VER TABLA PERSONAS QUE SEAN CLIENTES  
 @app.route('/verClientes', methods=["GET"])
 def verClientes():
     try:
@@ -423,7 +622,7 @@ def verClientes():
 
 
  
-
+# VER PERSONAS EMPLEADAS
 @app.route('/verEmpleados', methods=["GET"])
 def verEmpleados():
     try:
@@ -471,8 +670,7 @@ def verEmpleados():
 
 
 
-#Ver Ejercicios
-
+#VER EJERCICIOS
 @app.route('/verEjercicios', methods=["GET"])
 def verEjercicios():
     try:
@@ -522,8 +720,7 @@ def verEjercicios():
 
 
 
-#ver Tabla Recomendacion Alimentica
-
+#VER RECOMENDACIONES ALIMENTICIAS
 @app.route('/verRecoAlimen', methods=["GET"])
 def verRecoAlimen():
     try:
@@ -568,77 +765,16 @@ def verRecoAlimen():
 
 
 
-# Acaba ver Tablas --------------------------------------------------------------------------------
 
 
 
 
 
 
-# CRUD Tablas --------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------------
+#METODOS DE FUNCIONALIDAD-------------------------------------------------------------------------------------------------
 
-@app.route('/api/eliminarEjercicio/<int:id>', methods=['DELETE'])
-def eliminarEjercicio(id):
-    print(f"Intentando eliminar el ejercicio con id: {id}")  # Para verificar que se pasa el id
-    try:
-        # Conectar a la base de datos
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
-        cursor.execute('DELETE FROM ejercicio WHERE idEjercicio = %s', (id,))
-
-        # Verificar si se eliminó algún registro
-        if cursor.rowcount == 0:
-            return jsonify({"error": "Ejercicio no encontrado"}), 404
-
-        # Confirmar la transacción
-        connection.commit()
-
-        # Cerrar la conexión
-        cursor.close()
-        connection.close()
-
-        return jsonify({"message": f"Ejercicio con id {id} eliminado exitosamente"}), 200
-
-    except Exception as e:
-        print(f"Error al eliminar el ejercicio: {e}")
-        return jsonify({"error": "Hubo  un problema al eliminar el ejercicio"}), 500
-
-
-
-
-
-
-
-@app.route('/api/eliminarRecoAlimen/<int:id>', methods=['DELETE'])
-def eliminarRecoAlimen(id):
-    print(f"Intentando eliminar el RecoAlimen con id: {id}")  # Para verificar que se pasa el id
-    try:
-        # Conectar a la base de datos
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        # Eliminar el ejercicio de la base de datos usando el nombre correcto del campo (idEjercicio)
-        cursor.execute('DELETE FROM recomendacionai WHERE idRA = %s', (id,))
-
-        # Verificar si se eliminó algún registro
-        if cursor.rowcount == 0:
-            return jsonify({"error": "RecoAlimen no encontrado"}), 404
-
-        # Confirmar la transacción
-        connection.commit()
-
-        # Cerrar la conexión
-        cursor.close()
-        connection.close()
-
-        return jsonify({"message": f"RecoAlimen con id {id} RecoAlimen exitosamente"}), 200
-
-    except Exception as e:
-        print(f"Error al eliminar el RecoAlimen: {e}")
-        return jsonify({"error": "Hubo  un problema al eliminar el RecoAlimen"}), 500
-
+#DAR DATOS DEL USUARIO CON SU ID
 def get_user(user_id):
     
     connection = get_db_connection()
@@ -663,7 +799,7 @@ def get_user(user_id):
 
 
 
-
+#EDITAR CUENTA
 @app.route('/api/upload', methods=['POST'])
 def upload_profile():
     conn = None
@@ -739,87 +875,11 @@ def upload_profile():
 
 
 
-@app.route('/api/eliminarUsuario/<int:id>', methods=['DELETE'])
-def eliminarUsuario(id):
-    print(f"Intentando eliminar Persona con id: {id}")  
-    try:
-   
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        cursor.execute('SELECT idCliente FROM cliente WHERE idpersona = %s', (id,))
-        cliente = cursor.fetchone()  # Obtener el resultado de la consulta
-        client_id = cliente[0] if cliente else None
-        print(f"Id de cliente: {client_id}")
-
-        # Verificar si el id pertenece a un empleado
-        cursor.execute('SELECT idpersona FROM empleado WHERE idpersona = %s', (id,))
-        empleado = cursor.fetchone()
-
-        if cliente:  # Si es un cliente
-            # Primero, eliminar los registros en estadocuenta
-            cursor.execute('DELETE FROM estadocuenta WHERE idCli = %s', (client_id,))
-
-            # Luego, eliminar el cliente
-            cursor.execute('DELETE FROM cliente WHERE idpersona = %s', (id,))
-
-        elif empleado:  # Si es un empleado
-            # Eliminar el empleado
-            cursor.execute('DELETE FROM empleado WHERE idpersona = %s', (id,))
-
-        else:
-            return jsonify({"error": "Usuario no encontrado en cliente ni empleado"}), 404
-
-        # Eliminar la persona (después de cliente o empleado)
-        cursor.execute('DELETE FROM persona WHERE id = %s', (id,))
-
-        # Confirmar la transacción
-        connection.commit()
-
-        # Cerrar la conexión
-        cursor.close()
-        connection.close()
-
-        return jsonify({"message": f"Usuario con id {id} eliminado exitosamente"}), 200
-
-    except Exception as e:
-        print(f"Error al eliminar el usuario: {e}")
-        return jsonify({"error": "Hubo un problema al eliminar el usuario"}), 500
 
 
 
 
-
-
-# --------------------------------------------------------------------------------
-
-
-
-@app.route('/logout', methods=['POST'])
-def logout():
-    session.clear()  # Clear the session
-    return jsonify({'message': 'Logged out successfully'}), 200
-
-
-upload_bp = Blueprint('upload', __name__)
-
-# Configure upload folder and allowed extensions
-UPLOAD_FOLDER = './gold-gym/public/images'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def process_and_save_image(file):
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-
-    # Save the file to the filesystem
-    file.save(filepath)
-
-    return filepath, filename
-
+#COMIDA
 @app.route('/api/food', methods=['POST'])
 def manage_food():
     # Retrieve the food object and file
@@ -871,11 +931,22 @@ def manage_food():
 
     return jsonify({'message': 'Food added/updated successfully', 'filename': filename}), 200
 
+
+
+
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 # Define the upload folder path
 PUBLIC_IMAGES_FOLDER = os.path.join(BASE_DIR, 'public', 'images')
 
+
+
+
+
+
+
+#DAR DATOS DEL CLIENTE POR SU ID
 @app.route('/api/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     
@@ -896,6 +967,10 @@ def get_user(user_id):
         print(f"User with ID {user_id} not found.")
         return jsonify({"error": "User not found"}), 404
     
+
+
+
+
 @app.route('/images/<path:filename>')
 def serve_images(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
@@ -903,25 +978,80 @@ def serve_images(filename):
 
 
 
-
-# Función para enviar el correo
 def send_email(to_email, username, password):
-    from_email = "flexf9095@gmail.com"  # Usa tu correo de Gmail
-    from_password = "vfxu ppit pmum nkgd"  # Tu contraseña de Gmail
+    from_email = "flexf9095@gmail.com"  # CORREO DE FLEXXFITNESS
+    from_password = "vfxu ppit pmum nkgd"  # CONTRASENA
 
     # Configuración del servidor SMTP de Gmail
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     server.login(from_email, from_password)
 
-    # Crear el mensaje
+    # Crear el mensaje con HTML y estilos
     subject = "Gracias por registrarte en Flex Fitness"
-    body = f"Hola, gracias por suscribirte a Flex Fitness. Tu usuario es: {username} y tu contraseña es: {password}"
+    
+    body = f"""
+    <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f9;
+                    margin: 0;
+                    padding: 0;
+                    text-align: center;
+                }}
+                .container {{
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }}
+                h1 {{
+                    color: #4CAF50;
+                    font-size: 2em;
+                }}
+                p {{
+                    font-size: 1.1em;
+                    color: #333;
+                }}
+                .info {{
+                    font-weight: bold;
+                    color: #333;
+                }}
+                .button {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                    display: inline-block;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>¡Gracias por registrarte en Flex Fitness!</h1>
+                <p>Hola <span class="info">{username}</span>,</p>
+                <p>¡Bienvenido a Flex Fitness! Tu registro ha sido exitoso.</p>
+                <p>A continuación están tus detalles de acceso:</p>
+                <p><strong>Usuario:</strong> {username}</p>
+                <p><strong>Contraseña:</strong> {password}</p>
+                <a href="https://youtube.com" class="button">Ir al sitio</a>
+                <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
+            </div>
+        </body>
+    </html>
+    """
 
     msg = MIMEMultipart()
     msg['From'] = from_email
     msg['To'] = to_email
     msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'plain'))
+    msg.attach(MIMEText(body, 'html'))
 
     # Enviar el correo
     server.sendmail(from_email, to_email, msg.as_string())
@@ -932,29 +1062,8 @@ def send_email(to_email, username, password):
 
 
 
-#ACTUALIZAR ESTADOS DE CUENTAS
 
-def validar_estados_al_inicio():
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    try:
-        
-        cursor.execute("""
-            UPDATE estadocuenta
-            SET estado = 'Denegado'
-            WHERE estado = 'Aprobado'
-            AND DATEDIFF(NOW(), fecha) > 30;
-        """)
-        connection.commit()
-        print("Estados actualizados exitosamente al iniciar el servidor.")
-    except Exception as e:
-        print(f"Error al actualizar estados al inicio del servidor: {e}")
-        connection.rollback()
-    finally:
-        cursor.close()
-        connection.close()
-
-
+#TRAER LOS EJERCICIO
 @app.route('/api/get_exercises', methods=['GET'])
 def get_exercises():
     connection = get_db_connection()
@@ -969,6 +1078,12 @@ def get_exercises():
 
     return jsonify(exercises)
 
+
+
+
+
+
+#SELECCIONAR EJERCICIO FAVORITO
 @app.route('/api/favorite_exercise', methods=['POST'])
 def favorite_exercise():
     data = request.json
@@ -996,14 +1111,61 @@ def favorite_exercise():
         return jsonify({"message": "Exercise added to favorites"}), 201
 
 
+
+
+
+
+
+#Actualizar Suscripcion
+@app.route('/api/actualizarSuscripcion/<int:id>', methods=['PATCH'])
+def actualizarSuscripcion(id):
+    try:
+        # Conectar a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Imprimir el id recibido para depuración
+        print(f"ID del cliente recibido: {id}")
+        
+        # Obtener el idCliente correspondiente al idPersona
+        cursor.execute('SELECT idCliente FROM cliente WHERE idpersona = %s', (id,))
+        result = cursor.fetchone()
+
+        if result:
+            idcliente = result[0]
+
+            
+            cursor.execute('''
+                UPDATE estadoCuenta
+                SET fecha = NOW(), estado = 'Aprobado'
+                WHERE idCli = %s
+            ''', (idcliente,))
+
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+            return jsonify({"message": "Suscripcion actualizada correctamente"}), 200
+        else:
+            return jsonify({"error": "No se encontró el cliente"}), 404
+
+    except Exception as e:
+        print(f"Error al actualizar la suscripción: {e}")
+        return jsonify({"error": "Hubo un problema al actualizar la suscripcion"}), 500
+
+
+
+
+
+
+
+# ----------------------------------------------------------------------------------
+# MAIN (no poner nada debajo de esto sino no funciona) -----------------------------
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 
-
-
-# --------------------------------------------------------------------------------
-
- #no poner nada debajo de esto sino no funciona
 
 
 
