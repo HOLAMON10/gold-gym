@@ -65,7 +65,7 @@ const Rutinas = () => {
     }, {});
 
     const handleFavoriteToggle = async (exercise) => {
-        const id_cliente = localStorage.getItem("id");  // Assuming the client ID is stored in localStorage
+        const id_cliente = localStorage.getItem("id"); // Assuming the client ID is stored in localStorage
         console.log(id_cliente)
         try {
             const response = await fetch("http://127.0.0.1:5000/api/favorite_exercise", {
@@ -75,19 +75,19 @@ const Rutinas = () => {
                 },
                 body: JSON.stringify({
                     id_cliente,
-                    id_ejercicio: exercise.idEjercicio,  // Assuming exercise object has id_ejercicio
+                    id_ejercicio: exercise.idEjercicio, // Assuming exercise object has id_ejercicio
                 }),
             });
-
+    
             if (response.ok) {
                 const message = await response.json();
-
+    
                 // Update favorite exercises based on the response
                 setFavoriteExercises((prevFavorites) => {
                     if (message.message === "Exercise added to favorites") {
-                        return [...prevFavorites, exercise.nombreEjer];
+                        return [...prevFavorites, exercise.nombreEjer]; // Add exercise to favorites
                     } else if (message.message === "Exercise removed from favorites") {
-                        return prevFavorites.filter((name) => name !== exercise.nombreEjer);
+                        return prevFavorites.filter((id) => id !== exercise.nombreEjer); // Remove exercise from favorites
                     }
                     return prevFavorites;
                 });
