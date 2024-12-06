@@ -5,7 +5,7 @@ import FormCrearEjercicio from "./FormCrearEjercicio";
 
 function MenuEjercicioAdmin() {
     const [ejercicio, setEjercicios] = useState([]);
-    
+
     const [showEditPopup, setShowEditPopup] = useState(false);  // Controlar si mostrar o no la ventana emergente
     const [selectedEjercicio, setSelectedEjercicio] = useState(null);  // Guardar el ejercicio seleccionado para editar
     const [nombreEjer, setNombreEjercicio] = useState('');
@@ -35,7 +35,7 @@ function MenuEjercicioAdmin() {
             .catch(error => console.error('Error al obtener datos de ejercicios BP:', error));
     }, []);
 
-   
+
 
     // Función para eliminar ejercicio
     const handleEliminarEjercicio = (id) => {
@@ -48,7 +48,7 @@ function MenuEjercicioAdmin() {
                     alert(data.message); // Mensaje de éxito
                     // Actualizar el estado de los ejercicios
                     setEjercicios(prevEjercicios => prevEjercicios.filter(ejercicio => ejercicio.id !== id));
-           
+
                 } else {
                     alert(data.error); // Mensaje de error
                 }
@@ -108,7 +108,7 @@ function MenuEjercicioAdmin() {
                     setShowEditPopup(false);  // Cerrar el popup
                     // Actualizar la tabla de ejercicios con los nuevos datos
                     setEjercicios(prevEjercicios => prevEjercicios.map(ej => ej.id === selectedEjercicio.id ? { ...ej, nombreEjer: nombreEjer, repeticiones, levantamientos } : ej));
-   
+
                 } else {
                     alert(data.error);
                 }
@@ -144,7 +144,7 @@ function MenuEjercicioAdmin() {
                             <th></th>
                             <th></th>
                             <th></th>
-                            
+
                         </tr>
                     </thead>
                     <tbody>
@@ -156,7 +156,17 @@ function MenuEjercicioAdmin() {
                                     <td>{ejercicio.levantamientos}</td>
                                     <td>{ejercicio.objetivo}</td>
                                     <td>{ejercicio.descripcion}</td>
-                                    <td>{ejercicio.imagen_ejercicio}</td>
+                                    <td>
+                                        {ejercicio.imagen_ejercicio ? (
+                                            <img
+                                                src={`/images/${ejercicio.imagen_ejercicio}`}
+                                                alt={ejercicio.nombreEjer}
+                                                style={{ width: '70px', height: '70px', objectFit: 'cover' }}  // Adjust the size and fit as needed
+                                            />
+                                        ) : (
+                                            <span>No Image</span>
+                                        )}
+                                    </td>
                                     <td></td>
                                     <td>
                                         <button
@@ -194,6 +204,17 @@ function MenuEjercicioAdmin() {
                     <div className="popup-overlay">
                         <div className="popup-container">
                             <h3>Editar Ejercicio</h3>
+                            <div>
+                                {imagen_ejercicio ? (
+                                    <img
+                                        src={`/images/${imagen_ejercicio}`}
+                                        alt={nombreEjer}
+                                        style={{ width: '70px', height: '70px', objectFit: 'cover' }}  // Adjust the size and fit as needed
+                                    />
+                                ) : (
+                                    <span>No Image</span>
+                                )}
+                            </div>
                             <div>
                                 <label htmlFor="nombreEjer">Nombre Ejercicio</label>
                                 <input

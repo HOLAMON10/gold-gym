@@ -131,31 +131,40 @@ def register_user():
 #Registrar Ejercicios 
 @app.route('/api/agregarEjercicio', methods=['POST'])
 def agregarEjercicio():
-    data = request.json
-    nombreEjer = data.get('nombreEjer')
-    repeticiones = data.get('repeticiones')
-    levantamientos = data.get('levantamientos')
-    objetivo = data.get('objetivo')
-    descripcion = data.get('descripcion')
-    imagen_ejercicio = data.get('imagen_ejercicio')
+    # Get form data
+    nombreEjer = request.form.get('nombreEjer')
+    repeticiones = request.form.get('repeticiones')
+    levantamientos = request.form.get('levantamientos')
+    objetivo = request.form.get('objetivo')
+    descripcion = request.form.get('descripcion')
     
+    # Get the image file
+    imagen_ejercicio = request.files.get('file')
 
-    # Conectar a la base de datos
+    # If there is an image, save it to the public/images folder
+    if imagen_ejercicio:
+        filename = secure_filename(imagen_ejercicio.filename)
+        filepath = os.path.join(PUBLIC_IMAGES_FOLDER, filename)
+        imagen_ejercicio.save(filepath)
+    else:
+        filename = None
+
+    # Connect to the database
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # Insertar el ejercicio en la tabla
+    # Insert the exercise data into the database
     cursor.execute("""
-        INSERT INTO ejercicio (nombreEjer, repeticiones, levantamientos, objetivo,descripcion,imagen_ejercicio)
+        INSERT INTO ejercicio (nombreEjer, repeticiones, levantamientos, objetivo, descripcion, imagen_ejercicio)
         VALUES (%s, %s, %s, %s, %s, %s)
-    """, (nombreEjer, repeticiones, levantamientos, objetivo,descripcion,imagen_ejercicio))
+    """, (nombreEjer, repeticiones, levantamientos, objetivo, descripcion, filename))
 
-    # Confirmar la transacción y cerrar la conexión
+    # Commit the transaction and close the connection
     connection.commit()
     cursor.close()
     connection.close()
 
-    return jsonify({"message": "Ejercicio registrado exitosamente"}), 201
+    return jsonify({"message": "Ejercicio registrado exitosamente", "imagen_ejercicio": filename}), 201
 
 
 
@@ -810,7 +819,7 @@ def upload_profile():
         usuario = request.form.get("usuario")
         correo = request.form.get("correo")
         edad2 = request.form.get("edad")
-        print(request.form)
+       
         edad = int(edad2)
         
         
@@ -845,8 +854,7 @@ def upload_profile():
                 filepath = os.path.join(PUBLIC_IMAGES_FOLDER ,filename)
                 file.save(filepath)
 
-                # Store the relative path (e.g., "images/filename.jpg")
-                relative_path = os.path.relpath(filepath, start='./images')
+                
 
                 # Update profile_image in the database
                 cursor.execute(
@@ -971,9 +979,7 @@ def get_user(user_id):
 
 
 
-@app.route('/images/<path:filename>')
-def serve_images(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 
 

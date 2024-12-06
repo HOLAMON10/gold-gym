@@ -1,96 +1,144 @@
-import React from "react";
+import React, { useState, useRef } from "react";
+import Cropper from "react-easy-crop";
+import { getCroppedImg } from "../utils/cropImage";
 import './MenuAdmin.css';
 
 function FormCrearEjercicio() {
+  const [image, setImage] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const fileInputRef = useRef(null);
+  const [originalFile, setOriginalFile] = useState(null);
+  const [croppedArea, setCroppedArea] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
 
-    const Agregarclic = () => {
-        const nombreEjer = document.getElementById("nombreEjer").value;
-        const repeticiones = document.getElementById("repeticiones").value;
-        const levantamientos = document.getElementById("levantamientos").value;
-        const objetivo = document.getElementById("objetivo").value; // Capturar valor seleccionado
-        const descripcion = document.getElementById("descripcion").value;
-        const imagen_ejercicio = document.getElementById("imagen_ejercicio").value;
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/") && file.size < 5 * 1024 * 1024) {
+      setImage(URL.createObjectURL(file));
+      setOriginalFile(file);
+      setShowCropper(true); // Open the cropper modal
+    } else {
+      alert("Invalid file. Please upload an image less than 5 MB.");
+    }
+  };
 
-        // Crear el objeto con los datos del formulario
-        const data = {
-            nombreEjer,
-            repeticiones,
-            levantamientos,
-            objetivo, // Enviar el valor del dropdown
-            descripcion,
-            imagen_ejercicio
-        };
+  const onCropChange = (newCrop) => setCrop(newCrop);
 
-        // Hacer la petición al backend
-        fetch('http://localhost:5000/api/agregarEjercicio', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => response.json())
-            .then(data => {
-                alert("Ejercicio registrado exitosamente");
-            })
-            .catch(error => {
-                console.error("Error al registrar ejercicio:", error);
-            });
-    };
+  const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
+    setCroppedArea(croppedAreaPixels);
+  };
 
-    return (
-        <div className="form-small-container">
-            <h2>Agregar Ejercicio</h2>
-            <input
-                type="text"
-                id="nombreEjer"
-                placeholder="Ingresa nombre Ejercicio"
-                className="inputs-Crear"
+  const handleSaveCrop = async () => {
+    if (image && croppedArea) {
+      const croppedImage = await getCroppedImg(image, croppedArea);
+      setPreview(URL.createObjectURL(croppedImage)); // Show preview of the cropped image
+      setShowCropper(false); // Close the cropper modal
+    }
+  };
+
+  const handleSaveExercise = async () => {
+    const nombreEjer = document.getElementById("nombreEjer").value;
+    const repeticiones = document.getElementById("repeticiones").value;
+    const levantamientos = document.getElementById("levantamientos").value;
+    const objetivo = document.getElementById("objetivo").value;
+    const descripcion = document.getElementById("descripcion").value;
+
+    const formData = new FormData();
+    formData.append("nombreEjer", nombreEjer);
+    formData.append("repeticiones", repeticiones);
+    formData.append("levantamientos", levantamientos);
+    formData.append("objetivo", objetivo);
+    formData.append("descripcion", descripcion);
+
+    if (preview) {
+      formData.append("file", originalFile);
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/agregarEjercicio", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        alert("Ejercicio registrado exitosamente");
+      } else {
+        alert("Error al registrar ejercicio.");
+      }
+    } catch (error) {
+      alert("Error al registrar ejercicio.");
+      console.error("Error:", error);
+    }
+  };
+
+  return (
+    <div className="form-small-container">
+      <h2>Agregar Ejercicio</h2>
+      <input type="text" id="nombreEjer" placeholder="Nombre Ejercicio" className="inputs-Crear" />
+      <input type="number" id="repeticiones" placeholder="Repeticiones" className="inputs-Crear" />
+      <input type="number" id="levantamientos" placeholder="Levantamientos" className="inputs-Crear" />
+      <select id="objetivo" className="inputs-Crear">
+        <option value="">Selecciona el objetivo</option>
+        <option value="Pecho">Pecho</option>
+        <option value="Espalda">Espalda</option>
+        <option value="Piernas">Piernas</option>
+      </select>
+      <input type="text" id="descripcion" placeholder="Descripción" className="inputs-Crear" />
+
+      <div>
+        {preview ? (
+          <img src={preview} alt="Cropped Preview" className="w-32 h-32 object-cover rounded-full" />
+        ) : (
+          <div className="w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center">
+            <span>Preview</span>
+          </div>
+        )}
+        <button onClick={() => fileInputRef.current.click()} className="btn-upload">
+          Subir Imagen
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </div>
+
+      {/* Cropper Modal */}
+      {showCropper && (
+        
+        <div className="cropper-modal">
+          <div className="cropper-container">
+            <Cropper
+              image={image}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              onCropChange={onCropChange}
+              onCropComplete={onCropComplete}
+              onZoomChange={(newZoom) => setZoom(newZoom)}
             />
-
-            <input
-                type="number"
-                id="repeticiones"
-                placeholder="Ingrese cantidad repeticiones"
-                className="inputs-Crear"
-            />
-
-            <input
-                type="number"
-                id="levantamientos"
-                placeholder="Ingrese cantidad levantamientos"
-                className="inputs-Crear"
-            />
-
-            {/* Cambiar de input a select para el objetivo */}
-            <select id="objetivo" className="inputs-Crear">
-                <option value="">Selecciona el objetivo</option>
-                <option value="Pecho">Pectorales</option>
-                <option value="Espalda">Dorsales</option>
-                <option value="Piernas">Hombros</option>
-                <option value="Brazos">Triceps</option>
-                <option value="Brazos">Biceps</option>
-                <option value="Abdomen">Piernas</option>
-                
-            </select>
-
-            <input
-                type="text"
-                id="descripcion"
-                placeholder="Ingresa descripcion"
-                className="inputs-Crear"
-            />
-
-            <input
-                type="text"
-                id="imagen_ejercicio"
-                placeholder="Ingresa imagen"
-                className="inputs-Crear"
-            />
-
-            <button onClick={Agregarclic} className="btn-crear-usuario">Agregar ejercicio</button>
+            
+          </div>
+          <button onClick={handleSaveCrop} className="btn-save-crop">
+        Guardar Recorte
+      </button>
+          
         </div>
-    );
+        
+        
+        
+      
+      )}
+
+      <button onClick={handleSaveExercise} className="btn-crear-usuario">
+        Agregar ejercicio
+      </button>
+    </div>
+  );
 }
 
 export default FormCrearEjercicio;
