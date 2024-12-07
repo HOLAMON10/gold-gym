@@ -1,6 +1,6 @@
 import React from 'react';
 import NavBarClient from '../Components/NavigationMenuClient';
-
+import FormEstadisticasCliente from './FormEstadisticasCliente';
 // Card Component for the services section
 const Card = ({ title, description, bgColor }) => {
   return (
@@ -24,7 +24,7 @@ const StatCard = ({ value, label }) => {
 // Main Component
 const Dashboard = () => {
   return (
-    <div className="bg-[#292929] min-h-screen"style={{
+    <div className="bg-[#292929] min-h-screen" style={{
       backgroundColor: '#292929', // Base background color
       backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
       backgroundSize: '10px 10px' // CSS pattern
@@ -55,6 +55,16 @@ const Dashboard = () => {
               bgColor="bg-indigo-50"
             />
           </div>
+
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+            <FormEstadisticasCliente/>
+
+          </div>
+
+
+
 
           {/* Progress Section */}
           <div className="border-t border-gray-200 pt-6">

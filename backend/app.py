@@ -1120,9 +1120,7 @@ def favorite_exercise():
 
 
 
-
-
-#Actualizar Suscripcion
+# Actualizar Suscripcion
 @app.route('/api/actualizarSuscripcion/<int:id>', methods=['PATCH'])
 def actualizarSuscripcion(id):
     try:
@@ -1140,26 +1138,95 @@ def actualizarSuscripcion(id):
         if result:
             idcliente = result[0]
 
-            
-            cursor.execute('''
-                UPDATE estadoCuenta
-                SET fecha = NOW(), estado = 'Aprobado'
-                WHERE idCli = %s
-            ''', (idcliente,))
+            # Obtener el estado de la cuenta
+            cursor.execute('SELECT estado FROM estadocuenta WHERE idCli = %s', (idcliente,))
+            estado = cursor.fetchone()
 
-            connection.commit()
-            cursor.close()
-            connection.close()
+            if estado is None:
+                # No se encontró ningún estado para este cliente
+                return jsonify({"error": "No se encontró el estado de la cuenta"}), 404
 
-            return jsonify({"message": "Suscripcion actualizada correctamente"}), 200
+            if estado[0] == 'Denegado':  # Comparar con el valor de estado
+                # Actualizar el estado de la cuenta a 'Aprobado'
+                cursor.execute('''
+                    UPDATE estadoCuenta
+                    SET fecha = NOW(), estado = 'Aprobado'
+                    WHERE idCli = %s
+                ''', (idcliente,))
+
+                # Confirmar la transacción
+                connection.commit()
+
+                return jsonify({"message": "Suscripción actualizada correctamente"}), 200
+            else:
+                # Si el estado no es 'Denegado'
+                return jsonify({"error": "La suscripcion aun sigue activa"}), 400
         else:
-            return jsonify({"error": "No se encontró el cliente"}), 404
+            # No se encontró el cliente asociado a la persona
+            return jsonify({"error": "No se encontró el cliente asociado"}), 404
 
     except Exception as e:
+        # Imprimir el error para depuración
         print(f"Error al actualizar la suscripción: {e}")
-        return jsonify({"error": "Hubo un problema al actualizar la suscripcion"}), 500
+        return jsonify({"error": "Hubo un problema al actualizar la suscripción"}), 500
+
+    finally:
+        # Cerrar la conexión y el cursor
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 
+
+
+#SACAR ESCALA 1 A 10 ESTADISTICAS
+@app.route('/api/calculoPesoIdeal', methods=['POST'])
+def calculoPesoIdeal():
+    data = request.json  # Obtener el cuerpo JSON enviado desde React
+
+    # Convertir a los tipos correctos para evitar problemas de tipo
+    peso = float(data.get('peso'))  # Convertir el peso a flotante
+    altura = int(data.get('altura'))  # Convertir la altura a entero
+    edad = int(data.get('edad'))  # Convertir la edad a entero
+    sexo = data.get('sexo')
+    id_persona = data.get('id_persona')
+    naf = int(data.get('naf'))  # Convertir el nivel de actividad física a entero
+
+    # Conectar a la base de datos
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    # Convertir altura de cm a metros para el cálculo de IMC
+    altura_metros = altura / 100
+
+    # Cálculo de IMC
+    IMC = peso / (altura_metros ** 2)
+
+    # Calculo del Peso Ideal según el sexo
+    if sexo == 'Varon':
+        PesoIdeal = 48 + (2.7 * (altura - 152))  # Para varón
+    else:
+        PesoIdeal = 45.5 + (2.2 * (altura - 152))  # Para mujer
+
+    # Ajuste según el nivel de actividad física
+    PesoAjustado = PesoIdeal * (1 + ((naf - 3) / 10))
+
+    # Calcular la escala (1-10)
+    escala = 10 - (9 * abs((peso - PesoAjustado) / PesoAjustado))
+
+    # Insertar en la base de datos
+    cursor.execute("""
+        INSERT INTO estadisticas (peso, altura, edad, sexo, idPerso, naf, escala)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """, (peso, altura, edad, sexo, id_persona, naf, escala))
+
+    # Confirmar la transacción y cerrar la conexión
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return jsonify({"message": "tu escala 1 al 10 peso ideal es ", "escala": escala}), 201
 
 
 
