@@ -84,6 +84,8 @@ function FormCrearEjercicio() {
         <option value="Pecho">Pecho</option>
         <option value="Espalda">Espalda</option>
         <option value="Piernas">Piernas</option>
+        <option value="Piernas">Biceps</option>
+        <option value="Piernas">Triceps</option>
       </select>
       <input type="text" id="descripcion" placeholder="Descripción" className="inputs-Crear" />
 
