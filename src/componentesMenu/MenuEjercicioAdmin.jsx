@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './MenuAdmin.css';
 import NavigationMenu from "../Components/NavigationMenuEmpAdmin";
 import FormCrearEjercicio from "./FormCrearEjercicio";
+import Cropper from "react-easy-crop";
+import { getCroppedImg } from "../utils/cropImage";
 
 function MenuEjercicioAdmin() {
     const [ejercicio, setEjercicios] = useState([]);
-
     const [showEditPopup, setShowEditPopup] = useState(false);  // Controlar si mostrar o no la ventana emergente
     const [selectedEjercicio, setSelectedEjercicio] = useState(null);  // Guardar el ejercicio seleccionado para editar
     const [nombreEjer, setNombreEjercicio] = useState('');
@@ -14,6 +15,13 @@ function MenuEjercicioAdmin() {
     const [objetivo, setObjetivo] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [imagen_ejercicio, setImagen] = useState('');
+    const [image, setImage] = useState(null);
+    const fileInputRef = useRef(null);
+    const [originalFile, setOriginalFile] = useState(null);
+    const [croppedArea, setCroppedArea] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
 
     // Obtener los datos de los Ejercicios para bajar peso
     useEffect(() => {
@@ -36,7 +44,6 @@ function MenuEjercicioAdmin() {
     }, []);
 
 
-
     // Función para eliminar ejercicio
     const handleEliminarEjercicio = (id) => {
         fetch(`http://localhost:5000/api/eliminarEjercicio/${id}`, {
@@ -48,7 +55,6 @@ function MenuEjercicioAdmin() {
                     alert(data.message); // Mensaje de éxito
                     // Actualizar el estado de los ejercicios
                     setEjercicios(prevEjercicios => prevEjercicios.filter(ejercicio => ejercicio.id !== id));
-
                 } else {
                     alert(data.error); // Mensaje de error
                 }
@@ -59,13 +65,7 @@ function MenuEjercicioAdmin() {
             });
     };
 
-
-
-
-
     //-------------------------------------
-
-
 
     // Función para abrir el popup y cargar los datos del ejercicio seleccionado
     const handleEditarEjercicio = (ejercicio) => {
@@ -79,36 +79,41 @@ function MenuEjercicioAdmin() {
         setShowEditPopup(true);  // Mostrar la ventana emergente
     };
 
-
-
     // Función para cerrar el popup
     const handleClosePopup = () => {
         setShowEditPopup(false);
         setSelectedEjercicio(null);
     };
 
-
     // Función para enviar las actualizaciones al servidor
     const handleActualizarEjercicio = () => {
+        // Create a FormData object to send the form data and the file
+        const formData = new FormData();
+
+        // Append the fields to FormData
+        formData.append('nombreEjer', nombreEjer);
+        formData.append('repeticiones', repeticiones);
+        formData.append('levantamientos', levantamientos);
+        formData.append('objetivo', objetivo);
+        formData.append('descripcion', descripcion);
+
+        // Check if there is a new image and append it to the form data
+        if (fileInputRef.current.files[0]) {
+            formData.append('imagen_ejercicio', fileInputRef.current.files[0]);
+        }
+
+        // Send the request to the backend
         fetch(`http://localhost:5000/api/actualizarEjercicio/${selectedEjercicio.id}`, {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                nombreEjer,
-                repeticiones,
-                levantamientos
-            }),
+            body: formData,
         })
             .then(response => response.json())
             .then(data => {
                 if (data.message) {
                     alert('Ejercicio actualizado correctamente');
-                    setShowEditPopup(false);  // Cerrar el popup
-                    // Actualizar la tabla de ejercicios con los nuevos datos
-                    setEjercicios(prevEjercicios => prevEjercicios.map(ej => ej.id === selectedEjercicio.id ? { ...ej, nombreEjer: nombreEjer, repeticiones, levantamientos } : ej));
-
+                    setShowEditPopup(false);  // Close the popup
+                    // Update the exercise list with the new details
+                    setEjercicios(prevEjercicios => prevEjercicios.map(ej => ej.id === selectedEjercicio.id ? { ...ej, nombreEjer, repeticiones, levantamientos, imagen_ejercicio: data.imagen_ejercicio } : ej));
                 } else {
                     alert(data.error);
                 }
@@ -119,11 +124,21 @@ function MenuEjercicioAdmin() {
             });
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith("image/") && file.size < 5 * 1024 * 1024) {
+            setImage(URL.createObjectURL(file));
+            setOriginalFile(file);
+        } else {
 
+        }
+    };
 
+    const onCropChange = (newCrop) => setCrop(newCrop);
 
-
-
+    const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
+        setCroppedArea(croppedAreaPixels);
+    };
 
     return (
         <div>
@@ -144,7 +159,6 @@ function MenuEjercicioAdmin() {
                             <th></th>
                             <th></th>
                             <th></th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -161,7 +175,7 @@ function MenuEjercicioAdmin() {
                                             <img
                                                 src={`/images/${ejercicio.imagen_ejercicio}`}
                                                 alt={ejercicio.nombreEjer}
-                                                style={{ width: '70px', height: '70px', objectFit: 'cover' }}  // Adjust the size and fit as needed
+                                                style={{ width: '70px', height: '70px', objectFit: 'cover' }}
                                             />
                                         ) : (
                                             <span>No Image</span>
@@ -194,111 +208,132 @@ function MenuEjercicioAdmin() {
                     </tbody>
                 </table>
                 <br />
-
-
-                <br />
                 <FormCrearEjercicio />
 
                 {/* Ventana emergente de edición */}
                 {showEditPopup && (
                     <div className="popup-overlay">
-                        <div className="popup-container">
-                            <h3>Editar Ejercicio</h3>
-                            <div>
-                                {imagen_ejercicio ? (
-                                    <img
-                                        src={`/images/${imagen_ejercicio}`}
-                                        alt={nombreEjer}
-                                        style={{ width: '70px', height: '70px', objectFit: 'cover' }}  // Adjust the size and fit as needed
-                                    />
-                                ) : (
-                                    <span>No Image</span>
-                                )}
-                            </div>
-                            <div>
-                                <label htmlFor="nombreEjer">Nombre Ejercicio</label>
-                                <input
-                                    type="text"
-                                    id="nombreEjer"
-                                    value={nombreEjer}
-                                    onChange={(e) => setNombreEjercicio(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="repeticiones">Repeticiones</label>
-                                <input
-                                    type="text"
-                                    id="repeticiones"
-                                    value={repeticiones}
-                                    onChange={(e) => setRepeticiones(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="levantamientos">Levantamientos</label>
-                                <input
-                                    type="text"
-                                    id="levantamientos"
-                                    value={levantamientos}
-                                    onChange={(e) => setLevantamientos(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="levantamientos">Levantamientos</label>
-                                <input
-                                    type="text"
-                                    id="levantamientos"
-                                    value={levantamientos}
-                                    onChange={(e) => setLevantamientos(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="objetivo">objetivo</label>
-                                <input
-                                    type="text"
-                                    id="objetio"
-                                    value={objetivo}
-                                    onChange={(e) => setObjetivo(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="descripcion">descripcion</label>
-                                <input
-                                    type="text"
-                                    id="descripcion"
-                                    value={descripcion}
-                                    onChange={(e) => setDescripcion(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="imagen_ejercicio">imagen_ejercicio</label>
-                                <input
-                                    type="text"
-                                    id="imagen_ejercicio"
-                                    value={imagen_ejercicio}
-                                    onChange={(e) => setImagen(e.target.value)}
-                                />
-                            </div>
+                        <div className="bg-[#1F1F1F] rounded-lg shadow-lg p-4 sm:p-6 mb-6">
+                            <div className="popup-container">
+                                <h3>Editar Ejercicio</h3>
 
-                            <div>
-                                <button
-                                    className="popup-button update"
-                                    onClick={handleActualizarEjercicio}
-                                >
-                                    Actualizar
-                                </button>
-                                <button
-                                    className="popup-button cancel"
-                                    onClick={handleClosePopup}
-                                >
-                                    Cancelar
-                                </button>
+                                {/* Cropper Section at the top */}
+                                <div className="flex flex-col items-center mb-4">
+                                    {image ? (
+                                        <div className="relative w-full" style={{ height: "300px" }}>
+                                            <Cropper
+                                                image={image}
+                                                crop={crop}
+                                                zoom={zoom}
+                                                aspect={1}
+                                                onCropChange={onCropChange}
+                                                onCropComplete={onCropComplete}
+                                                onZoomChange={(newZoom) => setZoom(newZoom)}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <button onClick={() => fileInputRef.current.click()}>
+                                            <div className="w-32 h-32 sm:w-48 sm:h-48 bg-gray-300 rounded-full mb-4 overflow-hidden">
+                                                {imagen_ejercicio ? (
+                                                    <img
+                                                        src={`/images/${imagen_ejercicio}`}
+                                                        alt="Current Exercise Image"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <img
+                                                        src="/images/genericpp.png"
+                                                        alt="Profile Preview"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                )}
+                                            </div>
+                                        </button>
+                                    )}
+
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        style={{ display: "none" }}
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+
+                                {/* Form fields for exercise details */}
+                                <div>
+                                    <div>
+                                        <label htmlFor="nombreEjer">Nombre Ejercicio</label>
+                                        <input
+                                            type="text"
+                                            id="nombreEjer"
+                                            value={nombreEjer}
+                                            onChange={(e) => setNombreEjercicio(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="repeticiones">Repeticiones</label>
+                                        <input
+                                            type="text"
+                                            id="repeticiones"
+                                            value={repeticiones}
+                                            onChange={(e) => setRepeticiones(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="levantamientos">Levantamientos</label>
+                                        <input
+                                            type="text"
+                                            id="levantamientos"
+                                            value={levantamientos}
+                                            onChange={(e) => setLevantamientos(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="objetivo">Objetivo</label>
+                                        <input
+                                            type="text"
+                                            id="objetivo"
+                                            value={objetivo}
+                                            onChange={(e) => setObjetivo(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="descripcion">Descripción</label>
+                                        <input
+                                            type="text"
+                                            id="descripcion"
+                                            value={descripcion}
+                                            onChange={(e) => setDescripcion(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Buttons to update or cancel */}
+                                <div className="mt-4">
+                                    <button
+                                        className="popup-button update"
+                                        onClick={() => handleActualizarEjercicio(imagen_ejercicio)}  // Send only the image name
+                                    >
+                                        Actualizar
+                                    </button>
+                                    <button
+                                        className="popup-button cancel"
+                                        onClick={handleClosePopup}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 )}
 
+
             </div>
+
         </div>
+
     );
 }
 
