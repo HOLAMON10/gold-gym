@@ -209,40 +209,51 @@ def agregarRecoAlimen():
 
 @app.route('/api/actualizarEjercicio/<int:id>', methods=['PATCH'])
 def actualizarEjercicio(id):
+    conn = None
     try:
+        # Obtener los datos del formulario
+        nombreEjer = request.form.get("nombreEjer")
+        repeticiones = request.form.get("repeticiones")
+        levantamientos = request.form.get("levantamientos")
+        objetivo = request.form.get("objetivo")
+        descripcion = request.form.get("descripcion")
+
+
+        if not nombreEjer:
+            return jsonify({"error": "El nombre del ejercicio es requerido"}), 400
+
         # Conectar a la base de datos
-        connection = get_db_connection()
-        cursor = connection.cursor()
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-      
+        # Si hay un archivo de imagen en la solicitud, guardarlo en el servidor
+        if 'imagen_ejercicio' in request.files:
+            file = request.files['imagen_ejercicio']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                print(filename)
+                print(PUBLIC_IMAGES_FOLDER)
+                filepath = os.path.join(PUBLIC_IMAGES_FOLDER, filename)
+                file.save(filepath)
+                  # Usamos el nombre del archivo guardado
 
-        # Obtener los datos del cuerpo de la solicitud
-        data = request.json
-        nombreEjer = data.get('nombreEjer')
-        repeticiones = data.get('repeticiones')
-        levantamientos = data.get('levantamientos')
-        objetivo = data.get('objetivo')
-        descripcion = data.get('descripcion')
-        imagen_ejercicio = data.get('imagen_ejercicio')
-
-        # Actualizar el ejercicio, sin cambiar idRutina
+        # Actualizar el ejercicio en la base de datos
         cursor.execute('''
             UPDATE ejercicio
-            SET nombreEjer = %s, repeticiones = %s, levantamientos = %s, objetivo =%s, descripcion =%s, imagen_ejercicio =%s
+            SET nombreEjer = %s, repeticiones = %s, levantamientos = %s, objetivo = %s, descripcion = %s, imagen_ejercicio = %s
             WHERE idEjercicio = %s
-        ''', (nombreEjer, repeticiones, levantamientos,objetivo,descripcion,imagen_ejercicio, id))
+        ''', (nombreEjer, repeticiones, levantamientos, objetivo, descripcion, filename, id))
 
-        connection.commit()
+        conn.commit()
         cursor.close()
-        connection.close()
+        conn.close()
 
-        return jsonify({"message": "Ejercicio actualizado correctamente"}), 200
+        # Retornar una respuesta de éxito, incluyendo el nombre de la imagen
+        return jsonify({"message": "Ejercicio actualizado correctamente", "imagen_ejercicio": filename}), 200
 
     except Exception as e:
         print(f"Error al actualizar el ejercicio: {e}")
         return jsonify({"error": "Hubo un problema al actualizar el ejercicio"}), 500
-
-
 
 
 

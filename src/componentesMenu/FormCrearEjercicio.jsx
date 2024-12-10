@@ -93,13 +93,13 @@ function FormCrearEjercicio() {
         {preview ? (
           <img src={preview} alt="Cropped Preview" className="w-32 h-32 object-cover rounded-full" />
         ) : (
-          <div className="w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center">
+          <button>
+          <div className="w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center" onClick={() => fileInputRef.current.click()}>
             <span>Preview</span>
           </div>
+          </button>
         )}
-        <button onClick={() => fileInputRef.current.click()} className="btn-upload">
-          Subir Imagen
-        </button>
+        
         <input
           type="file"
           ref={fileInputRef}
@@ -130,12 +130,7 @@ function FormCrearEjercicio() {
       </button>
           
         </div>
-        
-        
-        
-      
       )}
-
       <button onClick={handleSaveExercise} className="btn-crear-usuario">
         Agregar ejercicio
       </button>
