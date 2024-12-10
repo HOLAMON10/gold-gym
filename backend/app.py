@@ -98,10 +98,7 @@ def register_user():
 
             elif rol_en_base == 'Empleado':
                 # Insertar en la tabla empleado
-                print(f"Insertando empleado con idpersona: {person_id}, horario: 'No definido', numero: 'No definido'")
-                cursor.execute("""
-                    INSERT INTO empleado (idpersona, horario, numero) VALUES (%s, %s, %s)
-                """, (person_id, 'No definido', 'No definido'))
+                
                
                 send_email(correo, usuario, contra)
 
@@ -1268,7 +1265,7 @@ def obtenerEscalaPesoIdeal(idPersona):
         if registros:
             # Convertir los registros a un formato legible para JSON
             registros_format = [(escala, fecha.strftime('%Y-%m-%d %H:%M:%S')) for escala, fecha in registros]
-            print(f"Registros encontrados: {registros_format}")  # Puedes verificar los registros aquí
+            
             return jsonify(registros_format), 200  # Devolver los registros como JSON
         else:
             # Si no hay registros para ese idPersona, devolver un error
@@ -1292,6 +1289,7 @@ def obtenerEscalaPesoIdeal(idPersona):
 
 
 if __name__ == '__main__':
+    validar_estados_al_inicio()
     app.run(debug=True)
 
 
