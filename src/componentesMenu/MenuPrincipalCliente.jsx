@@ -1,6 +1,7 @@
 import React from 'react';
 import NavBarClient from '../Components/NavigationMenuClient';
 import FormEstadisticasCliente from './FormEstadisticasCliente';
+import LinesChart from './LinesChart';
 // Card Component for the services section
 const Card = ({ title, description, bgColor }) => {
   return (
@@ -35,7 +36,7 @@ const Dashboard = () => {
 
         <div className="bg-white rounded-lg shadow-lg p-6">
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Bienvenido a Valerio Fitness</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Bienvenido a su interfaz de Progreso</h2>
 
           {/* Services Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -57,18 +58,13 @@ const Dashboard = () => {
           </div>
 
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-            <FormEstadisticasCliente/>
-
-          </div>
-
-
-
 
           {/* Progress Section */}
           <div className="border-t border-gray-200 pt-6">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Tu Progreso</h3>
+            <LinesChart/>
+            <FormEstadisticasCliente/>
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <StatCard value="12" label="Entrenamientos" />
               <StatCard value="5.2k" label="Calorías" />
@@ -82,7 +78,7 @@ const Dashboard = () => {
         <footer className="bg-white mt-12 py-8">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center text-gray-600">
-              <p>© 2024 Valerio Fitness. Todos los derechos reservados.</p>
+              <p>© 2024 Flexx Fitness. Todos los derechos reservados.</p>
             </div>
           </div>
         </footer>
