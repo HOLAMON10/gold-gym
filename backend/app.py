@@ -174,29 +174,39 @@ def agregarEjercicio():
 #Registrar Recomendacion Alimenticia 
 @app.route('/api/agregarRecoAlimen', methods=['POST'])
 def agregarRecoAlimen():
-    data = request.json
-    objetivo = data.get('objetivo')
-    calorias = data.get('calorias')
-    proteina = data.get('proteina')
-    carbo = data.get('carbo')
-    
+     
+    objetivo = request.form.get('objetivo')  # Extract from form data
+    calorias = request.form.get('calorias')
+    proteina = request.form.get('proteina')
+    carbo = request.form.get('carbo')
+    filename = None
 
     # Conectar a la base de datos
     connection = get_db_connection()
     cursor = connection.cursor()
+    print('habra algo' + objetivo)
 
+    if 'imagen_recom' in request.files:
+            file = request.files['imagen_recom']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                print(filename)
+                print(PUBLIC_IMAGES_FOLDER)
+                filepath = os.path.join(PUBLIC_IMAGES_FOLDER, filename)
+                file.save(filepath)
+                  # Usamos el nombre del archivo guardado
     # Insertar el ejercicio en la tabla
     cursor.execute("""
-        INSERT INTO recomendacionai (objetivo, calorias, proteina, carbo)
-        VALUES (%s, %s, %s, %s)
-    """, (objetivo, calorias, proteina, carbo))
+        INSERT INTO recomendacionai (objetivo, calorias, proteina, carbo, imagen_recom)
+        VALUES (%s, %s, %s, %s,%s)
+    """, (objetivo, calorias, proteina, carbo, filename))
 
     # Confirmar la transacción y cerrar la conexión
     connection.commit()
     cursor.close()
     connection.close()
 
-    return jsonify({"message": "Recomendacion Alimenticia  registrado  exitosamente"}), 201
+    return jsonify({"message": "Recomendacion Alimenticia  registrado  exitosamente"}), 200
 
 
 
@@ -266,19 +276,28 @@ def actualizarRecoAlimen(id):
         cursor = connection.cursor()
 
         # Obtener los datos del cuerpo de la solicitud
-        data = request.json
-        objetivio = data.get('objetivio')
-        calorias = data.get('calorias')
-        proteina = data.get('proteina')
-        carbo = data.get('carbo')
+        objetivo = request.form.get('objetivo')  # Extract from form data
+        calorias = request.form.get('calorias')
+        proteina = request.form.get('proteina')
+        carbo = request.form.get('carbo')
+        filename = None
+        if 'imagen_recom' in request.files:
+            file = request.files['imagen_recom']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                print(filename)
+                print(PUBLIC_IMAGES_FOLDER)
+                filepath = os.path.join(PUBLIC_IMAGES_FOLDER, filename)
+                file.save(filepath)
+                  # Usamos el nombre del archivo guardado
 
         # Actualizar el reco alimenticia sin cambiar idRA
         cursor.execute('''
             UPDATE recomendacionai
 
-            SET objetivo = %s, calorias = %s, proteina = %s, carbo = %s
+            SET objetivo = %s, calorias = %s, proteina = %s, carbo = %s, imagen_recom = %s
             WHERE idRA = %s
-        ''', (objetivio, calorias, proteina, carbo, id))
+        ''', (objetivo, calorias, proteina, carbo, filename, id))
 
         connection.commit()
         cursor.close()
@@ -767,6 +786,7 @@ def verRecoAlimen():
                 'calorias': RecoAlimen[2],
                 'proteina': RecoAlimen[3],
                 'carbo': RecoAlimen[4],
+                'imagen_recom': RecoAlimen[5],
                 
             })
 
