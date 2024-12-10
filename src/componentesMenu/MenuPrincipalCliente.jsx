@@ -36,41 +36,17 @@ const Dashboard = () => {
 
         <div className="bg-white rounded-lg shadow-lg p-6">
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Bienvenido a su interfaz de Progreso</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Bienvenido a su Interfaz de Progreso</h2>
 
-          {/* Services Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card
-              title="Rutinas Personalizadas"
-              description="Descubre rutinas adaptadas a tus objetivos y nivel de experiencia."
-              bgColor="bg-indigo-50"
-            />
-            <Card
-              title="Plan de Nutrición"
-              description="Planes de alimentación diseñados para maximizar tus resultados."
-              bgColor="bg-indigo-50"
-            />
-            <Card
-              title="Seguimiento Personal"
-              description="Monitorea tu progreso y alcanza tus metas fitness."
-              bgColor="bg-indigo-50"
-            />
-          </div>
-
+         
 
 
           {/* Progress Section */}
           <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Tu Progreso</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Tu Progreso de Peso Ideal</h3>
             <LinesChart/>
             <FormEstadisticasCliente/>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard value="12" label="Entrenamientos" />
-              <StatCard value="5.2k" label="Calorías" />
-              <StatCard value="8" label="Días seguidos" />
-              <StatCard value="3" label="Objetivos" />
-            </div>
           </div>
         </div>
 
