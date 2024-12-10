@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './MenuAdmin.css';
 import NavigationMenu from "../Components/NavigationMenuEmpAdmin";
 import FormCrearRecoAlimen from './FormCrearRecoAlimen';
-
+import Cropper from "react-easy-crop";
 function MenuRecoAlimenAdmin() {
     const [RecoAlimen, setRecoAlimen] = useState([]);
     const [showEditPopup, setShowEditPopup] = useState(false);  // Controlar si mostrar o no la ventana emergente
@@ -11,7 +11,14 @@ function MenuRecoAlimenAdmin() {
     const [calorias, setCalorias] = useState('');
     const [proteina, setProteina] = useState('');
     const [carbo, setCarbo] = useState('');
-
+    const [imagen_recom, setImagen] = useState('');
+    const [image, setImage] = useState(null);
+    const fileInputRef = useRef(null);
+    const [originalFile, setOriginalFile] = useState(null);
+    const [croppedArea, setCroppedArea] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
 
 
     // Obtener los datos de los Recomendaciones Alimenticias
@@ -67,6 +74,7 @@ function MenuRecoAlimenAdmin() {
         setCalorias(reco.calorias);
         setProteina(reco.proteina);
         setCarbo(reco.carbo);
+        setImagen(reco.imagen_recom);
         setShowEditPopup(true);  // Mostrar la ventana emergente
     };
 
@@ -81,18 +89,22 @@ function MenuRecoAlimenAdmin() {
 
     // Función para enviar las actualizaciones al servidor
     const handleActualizarRecoAlimen = () => {
+        const formData = new FormData();
+
+        // Append the fields to FormData
+        formData.append('calorias', calorias);
+        formData.append('carbo', carbo);
+        formData.append('proteina', proteina);
+        formData.append('objetivo', objetivo);
+        
+
+        if (fileInputRef.current.files[0]) {
+            formData.append('imagen_recom', fileInputRef.current.files[0]);
+        }
+
         fetch(`http://localhost:5000/api/actualizarRecoAlimen/${SelectedRecoAlimen.id}`, {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                objetivo,
-                calorias,
-                proteina,
-                carbo
-
-            }),
+            body: formData,
         })
             .then(response => response.json())
             .then(data => {
@@ -100,19 +112,33 @@ function MenuRecoAlimenAdmin() {
                     alert('Recomendacion actualizado correctamente');
                     setShowEditPopup(false);  // Cerrar el popup
                     // Actualizar la tabla de ejercicios con los nuevos datos
-                    setRecoAlimen(prevRecoAlimen => prevRecoAlimen.map(ej => ej.id === SelectedRecoAlimen.id ? { ...ej, objetivo: objetivo, calorias, proteina, carbo } : ej));
+                    setRecoAlimen(prevRecoAlimen => prevRecoAlimen.map(ej => ej.id === SelectedRecoAlimen.id ? { ...ej, objetivo: objetivo, calorias, proteina, carbo, imagen_recom: data.imagen_imagen_recom} : ej));
 
                 } else {
                     alert(data.error);
                 }
             })
             .catch(error => {
-                console.error('Error al actualizar el ejercicio:', error);
-                alert('Hubo un error al actualizar el ejercicio');
+                console.error('Error al actualizar la recomendacion:', error);
+                alert('Hubo un error al actualizar el recomendacion');
             });
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith("image/") && file.size < 5 * 1024 * 1024) {
+            setImage(URL.createObjectURL(file));
+            setOriginalFile(file);
+        } else {
 
+        }
+    };
+
+    const onCropChange = (newCrop) => setCrop(newCrop);
+
+    const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
+        setCroppedArea(croppedAreaPixels);
+    };
 
 
     return (
@@ -143,6 +169,17 @@ function MenuRecoAlimenAdmin() {
                                     <td>{reco.calorias}</td>
                                     <td>{reco.proteina}</td>
                                     <td>{reco.carbo}</td>
+                                    <td>
+                                        {reco.imagen_recom ? (
+                                            <img
+                                                src={`/images/${reco.imagen_recom}`}
+                                                alt={reco.objetivo}
+                                                style={{ width: '70px', height: '70px', objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <span>No Image</span>
+                                        )}
+                                    </td>
                                     <td>
                                         <button
                                             style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
@@ -177,6 +214,48 @@ function MenuRecoAlimenAdmin() {
                     <div className="popup-overlay">
                         <div className="popup-container">
                             <h3>Editar Recomendacion</h3>
+                            {/* Cropper Section at the top */}
+                            <div className="flex flex-col items-center mb-4">
+                                    {image ? (
+                                        <div className="relative w-full" style={{ height: "300px" }}>
+                                            <Cropper
+                                                image={image}
+                                                crop={crop}
+                                                zoom={zoom}
+                                                aspect={1}
+                                                onCropChange={onCropChange}
+                                                onCropComplete={onCropComplete}
+                                                onZoomChange={(newZoom) => setZoom(newZoom)}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <button onClick={() => fileInputRef.current.click()}>
+                                            <div className="w-32 h-32 sm:w-48 sm:h-48 bg-gray-300 rounded-full mb-4 overflow-hidden">
+                                                {imagen_recom ? (
+                                                    <img
+                                                        src={`/images/${imagen_recom}`}
+                                                        alt="Current Exercise Image"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <img
+                                                        src="/images/genericpp.png"
+                                                        alt="Profile Preview"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                )}
+                                            </div>
+                                        </button>
+                                    )}
+
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        style={{ display: "none" }}
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
                             <div>
                                 <label htmlFor="objetivo">Objetivo</label>
                                 <input
