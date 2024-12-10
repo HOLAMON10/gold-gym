@@ -1148,7 +1148,30 @@ def favorite_exercise():
         connection.commit()
         return jsonify({"message": "Exercise added to favorites"}), 201
 
+@app.route('/api/get_favorites', methods=['POST'])
+def get_favorites():
+    data = request.json
+    id_cliente = data.get('id_cliente')
+    print(f"Fetching favorites for client {id_cliente}")
 
+    # Fetch all favorite exercises for the given client
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT e.idEjercicio, e.nombreEjer
+        FROM rutinapersonalizada rp
+        JOIN ejercicio e ON rp.id_ejercicio = e.idEjercicio
+        WHERE rp.id_persona = %s
+    """, (id_cliente,))
+    result = cursor.fetchall()
+    print(result)
+
+    # If the result is not empty, return the exercises
+    if result:
+        favorites = [{"id_ejercicio": row[0], "nombreEjer": row[1]} for row in result]
+        return jsonify(favorites), 200
+    else:
+        return jsonify([]), 200
 
 
 

@@ -151,11 +151,16 @@ function MenuAdmin() {
 
 
     return (
-        <div>
+        <div className="bg-[#292929] min-h-screen"
+        style={{
+          backgroundColor: '#292929',
+          backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
+          backgroundSize: '10px 10px',
+        }}>
             <NavBar />
             <div id="menu-admin-container">
                 <br />
-                <h2 style={{ color: 'Black', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Clientes</h2>
+                <h2 style={{ color: 'white', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Clientes</h2>
                 <table id="clientes">
                     <thead>
                         <tr>

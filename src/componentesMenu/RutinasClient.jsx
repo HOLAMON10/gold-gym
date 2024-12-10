@@ -15,6 +15,7 @@ const Rutinas = () => {
     useEffect(() => {
         const fetchExercises = async () => {
             try {
+                // Fetch exercises
                 const response = await fetch("http://127.0.0.1:5000/api/get_exercises");
                 const data = await response.json();
                 setExercises(data);
@@ -23,6 +24,21 @@ const Rutinas = () => {
                 const uniqueObjectives = [...new Set(data.map((exercise) => exercise.objetivo))];
                 setAllObjectives(uniqueObjectives);
                 setIsLoading(false);
+
+                // Fetch the favorites for the current client
+                const id_cliente = localStorage.getItem("id");
+                const favoritesResponse = await fetch("http://127.0.0.1:5000/api/get_favorites", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id_cliente }),
+                });
+                const favoriteData = await favoritesResponse.json();
+                const favoriteIds = favoriteData.map(favorite => favorite.nombreEjer);
+                console.log("test",favoriteIds)
+                setFavoriteExercises(favoriteIds);
+
             } catch (error) {
                 console.error("Error fetching exercises:", error);
             }
@@ -66,7 +82,6 @@ const Rutinas = () => {
 
     const handleFavoriteToggle = async (exercise) => {
         const id_cliente = localStorage.getItem("id"); // Assuming the client ID is stored in localStorage
-        console.log(id_cliente)
         try {
             const response = await fetch("http://127.0.0.1:5000/api/favorite_exercise", {
                 method: "POST",
@@ -78,10 +93,10 @@ const Rutinas = () => {
                     id_ejercicio: exercise.idEjercicio, // Assuming exercise object has id_ejercicio
                 }),
             });
-    
+
             if (response.ok) {
                 const message = await response.json();
-    
+
                 // Update favorite exercises based on the response
                 setFavoriteExercises((prevFavorites) => {
                     if (message.message === "Exercise added to favorites") {
@@ -212,11 +227,9 @@ const Rutinas = () => {
                         <div>
                             {/* Flex container for nombreEjer and favorite icon */}
                             <div className="flex items-center justify-start mb-4">
-                                {/* Exercise name with margin to the right */}
                                 <h2 className="text-white text-xl md:text-2xl font-bold mr-2">
                                     {selectedExercise.nombreEjer}
                                 </h2>
-                                {/* Favorite button next to the exercise name */}
                                 <button
                                     onClick={() => handleFavoriteToggle(selectedExercise)}
                                     className="bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-all"
@@ -238,49 +251,36 @@ const Rutinas = () => {
                             {/* Exercise details */}
                             <p className="mt-4 text-white"><strong>Repeticiones:</strong> {selectedExercise.repeticiones}</p>
                             <p className="mt-4 text-white"><strong>Levantamientos:</strong> {selectedExercise.levantamientos}</p>
-                            <p className="mt-4 text-white"><strong>Descripcion:</strong> {selectedExercise.descripcion}</p>
+                            <p className="mt-4 text-white"><strong>Series:</strong> {selectedExercise.series}</p>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Filter Modal */}
+            {/* Mobile Filter Modal */}
             {filterModalOpen && (
-                <div
-                    className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center"
-                    onClick={closeFilterModal}
-                >
-                    <div className="bg-[#1F1F1F] p-6 rounded-lg w-full max-w-md relative">
-                        {/* Close Button */}
-                        <button
-                            onClick={() => setFilterModalOpen(false)}
-                            className="absolute top-2 right-2 text-white text-2xl"
-                        >
-                            ×
-                        </button>
-
-                        <h3 className="text-xl font-bold text-white mb-4">Filtros</h3>
-                        <div className="flex items-center space-x-2 mb-4">
-                            <input
-                                type="checkbox"
-                                onChange={handleClearFilter}
-                                checked={selectedObjectives.length > 0}
-                                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                            />
-                            <span className="text-gray-300">Clear Filter</span>
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-10" onClick={closeFilterModal}>
+                    <div className="w-3/4 sm:w-2/3 bg-[#1F1F1F] p-6 rounded-lg absolute top-20 left-1/2 transform -translate-x-1/2 z-20">
+                        <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b-2 border-teal-600">Filtros</h3>
+                        <div className="flex items-center space-x-2 mb-6">
+                            <button
+                                onClick={handleClearFilter}
+                                className="text-teal-600 text-lg px-4 py-2 rounded-lg bg-gray-700 hover:bg-teal-700 transition-all duration-200"
+                            >
+                                Limpiar Filtros
+                            </button>
                         </div>
-                        <ul className="space-y-4 overflow-y-auto max-h-[300px]">
+                        <ul className="space-y-4 overflow-y-auto max-h-60">
                             {allObjectives.map((objective) => (
-                                <li key={objective}>
-                                    <label className="flex items-center space-x-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedObjectives.includes(objective)}
-                                            onChange={() => toggleObjective(objective)}
-                                            className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                                        />
-                                        <span className="text-gray-300">{objective}</span>
-                                    </label>
+                                <li
+                                    key={objective}
+                                    onClick={() => toggleObjective(objective)}
+                                    className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-200 ${selectedObjectives.includes(objective)
+                                        ? "bg-teal-700 text-white"
+                                        : "bg-[#292929] text-gray-300 hover:bg-teal-600"
+                                        }`}
+                                >
+                                    <span className="text-lg">{objective}</span>
                                 </li>
                             ))}
                         </ul>
