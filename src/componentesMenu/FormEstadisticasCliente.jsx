@@ -6,7 +6,6 @@ function FormEstadisticasCliente() {
     const [altura, setAltura] = useState('');
     const [edad, setEdad] = useState('');
     const [sexo, setSexo] = useState('');
-    const [naf, setNaf] = useState('');
     const [escala, setEscala] = useState('');
     const [error, setError] = useState('');  // Para manejar errores
 
@@ -27,8 +26,6 @@ function FormEstadisticasCliente() {
                     edad: parseInt(edad),
                     sexo,
                     id_persona: idPersona,  // Aquí pasamos el idPersona desde localStorage
-                    naf: parseInt(naf),  // Convertir a entero
-                    escala
                 }),
             });
 
@@ -51,7 +48,7 @@ function FormEstadisticasCliente() {
     };
 
     return (
-        <div className="form-small-container">
+        <div className="form-small-container2">
             <h2>Calcular Escala de Peso Ideal</h2>
             {error && <div className="error-message">{error}</div>}  {/* Mensaje de error */}
 
@@ -86,11 +83,11 @@ function FormEstadisticasCliente() {
                             id="checkV"
                             type="radio"
                             name="sexo"
-                            value="Varon"
-                            checked={sexo === 'Varon'}
-                            onChange={() => setSexo('Varon')}
+                            value="Hombre"
+                            checked={sexo === 'Hombre'}
+                            onChange={() => setSexo('Hombre')}
                         />
-                        <label htmlFor="checkV">Varon</label>
+                        <label htmlFor="checkV">Hombre</label>
                     </div>
 
                     <div>
@@ -106,20 +103,7 @@ function FormEstadisticasCliente() {
                     </div>
                 </div>
 
-                <select
-                    value={naf}
-                    onChange={(e) => setNaf(e.target.value)}
-                    className="inputs-Crear"
-                >
-                    <option value="">Selecciona el nivel de actividad</option>
-                    <option value="1">1. Sedentario</option>
-                    <option value="2">2. Actividad ligera</option>
-                    <option value="3">3. Moderadamente activo</option>
-                    <option value="4">4. Muy activo</option>
-                    <option value="5">5. Extremadamente activo</option>
-                </select>
-
-                <button type="submit" className="btn-crear-usuario">Calcular Escala</button>
+                <button type="submit" className="btn-crear-estadistica">Calcular Escala</button>
             </form>
 
             {escala && <p>Escala calculada: {escala}</p>}

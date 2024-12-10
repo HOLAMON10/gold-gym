@@ -11,6 +11,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -1179,8 +1180,7 @@ def actualizarSuscripcion(id):
 
 
 
-
-#SACAR ESCALA 1 A 10 ESTADISTICAS
+# SACAR ESCALA 1 A 10 ESTADISTICAS
 @app.route('/api/calculoPesoIdeal', methods=['POST'])
 def calculoPesoIdeal():
     data = request.json  # Obtener el cuerpo JSON enviado desde React
@@ -1190,8 +1190,7 @@ def calculoPesoIdeal():
     altura = int(data.get('altura'))  # Convertir la altura a entero
     edad = int(data.get('edad'))  # Convertir la edad a entero
     sexo = data.get('sexo')
-    id_persona = data.get('id_persona')
-    naf = int(data.get('naf'))  # Convertir el nivel de actividad física a entero
+    id_persona = data.get('id_persona')  # ID de la persona
 
     # Conectar a la base de datos
     connection = get_db_connection()
@@ -1203,30 +1202,75 @@ def calculoPesoIdeal():
     # Cálculo de IMC
     IMC = peso / (altura_metros ** 2)
 
-    # Calculo del Peso Ideal según el sexo
-    if sexo == 'Varon':
-        PesoIdeal = 48 + (2.7 * (altura - 152))  # Para varón
+    # Calcular la puntuación por IMC (rango ideal entre 18.5 y 24.9)
+    if IMC < 18.5:
+        puntuacion_imc = 1  # Muy bajo
+    elif 18.5 <= IMC < 22:
+        puntuacion_imc = 8  # Ideal para personas jóvenes
+    elif 22 <= IMC < 25:
+        puntuacion_imc = 10  # Ideal
+    elif 25 <= IMC < 30:
+        puntuacion_imc = 6  # Sobrepeso
     else:
-        PesoIdeal = 45.5 + (2.2 * (altura - 152))  # Para mujer
+        puntuacion_imc = 3  # Obesidad
 
-    # Ajuste según el nivel de actividad física
-    PesoAjustado = PesoIdeal * (1 + ((naf - 3) / 10))
+    # Ajuste por edad
+    if edad < 30:
+        puntuacion_final = puntuacion_imc  # Sin ajuste
+    elif 30 <= edad < 50:
+        puntuacion_final = puntuacion_imc - 1  # Ajuste leve por edad
+    else:
+        puntuacion_final = puntuacion_imc - 2  # Ajuste mayor por edad
 
-    # Calcular la escala (1-10)
-    escala = 10 - (9 * abs((peso - PesoAjustado) / PesoAjustado))
+    # Asegurarse de que la puntuación esté entre 1 y 10
+    puntuacion_final = max(1, min(10, puntuacion_final))
 
     # Insertar en la base de datos
     cursor.execute("""
-        INSERT INTO estadisticas (peso, altura, edad, sexo, idPerso, naf, escala)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (peso, altura, edad, sexo, id_persona, naf, escala))
+        INSERT INTO estadisticas (peso, altura, edad, sexo, idPerso, escala, fecha)
+        VALUES (%s, %s, %s, %s, %s, %s, NOW())
+    """, (peso, altura, edad, sexo, id_persona, puntuacion_final))
 
     # Confirmar la transacción y cerrar la conexión
     connection.commit()
     cursor.close()
     connection.close()
 
-    return jsonify({"message": "tu escala 1 al 10 peso ideal es ", "escala": escala}), 201
+    return jsonify({"message": "Tu escala 1 al 10 para peso ideal es", "escala": puntuacion_final}), 201
+
+
+
+
+
+@app.route('/api/escalaPesoIdeal/<int:idPersona>', methods=['GET'])
+def obtenerEscalaPesoIdeal(idPersona):
+    try:
+        # Obtener la conexión a la base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Ejecutar la consulta SQL para obtener las columnas 'escala' y 'fecha' filtradas por idPersona
+        cursor.execute('SELECT escala, fecha FROM estadisticas WHERE idPerso = %s ORDER BY fecha ASC', (idPersona,))
+        registros = cursor.fetchall()  # Obtener todos los resultados de la consulta
+
+        # Verificar si se encontraron registros
+        if registros:
+            # Convertir los registros a un formato legible para JSON
+            registros_format = [(escala, fecha.strftime('%Y-%m-%d %H:%M:%S')) for escala, fecha in registros]
+            print(f"Registros encontrados: {registros_format}")  # Puedes verificar los registros aquí
+            return jsonify(registros_format), 200  # Devolver los registros como JSON
+        else:
+            # Si no hay registros para ese idPersona, devolver un error
+            return jsonify({"error": "No se encontraron registros para este usuario"}), 404
+
+    except Exception as e:
+        # Si ocurre un error, imprimirlo y devolver un error genérico
+        print(f"Error al obtener los datos: {e}")
+        return jsonify({"error": "Hubo un problema al obtener los datos"}), 500
+
+    finally:
+        connection.close()
+
 
 
 
