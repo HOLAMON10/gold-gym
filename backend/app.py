@@ -1332,7 +1332,7 @@ def obtenerEscalaPesoIdeal(idPersona):
 
 
 if __name__ == '__main__':
-    validar_estados_al_inicio()
+    
     app.run(debug=True)
 
 
