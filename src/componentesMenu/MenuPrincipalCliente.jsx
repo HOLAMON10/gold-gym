@@ -1,53 +1,167 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import NavBarClient from '../Components/NavigationMenuClient';
 import FormEstadisticasCliente from './FormEstadisticasCliente';
 import LinesChart from './LinesChart';
-// Card Component for the services section
-const Card = ({ title, description, bgColor }) => {
-  return (
-    <div className={`p-4 ${bgColor} rounded-lg`}>
-      <h3 className="text-lg font-semibold text-indigo-600 mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
-    </div>
-  );
-};
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
-// Stats Component for the progress section
-const StatCard = ({ value, label }) => {
-  return (
-    <div className="text-center">
-      <p className="text-2xl font-bold text-indigo-600">{value}</p>
-      <p className="text-gray-600">{label}</p>
-    </div>
-  );
-};
-
-// Main Component
 const Dashboard = () => {
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [groupedExercises, setGroupedExercises] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [favoriteExercises, setFavoriteExercises] = useState([]);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const userId = localStorage.getItem('id');
+      try {
+        const response = await fetch('http://localhost:5000/api/get_favorites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id_cliente: userId }),
+        });
+        const data = await response.json();
+        setFavorites(data);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  const openModal = (exercise) => {
+    setSelectedExercise(exercise);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedExercise(null);
+    setIsModalOpen(false);
+  };
+
+  const handleFavoriteToggle = (exercise) => {
+    setFavoriteExercises((prevFavorites) => {
+      if (prevFavorites.includes(exercise.nombreEjer)) {
+        return prevFavorites.filter((name) => name !== exercise.nombreEjer);
+      } else {
+        return [...prevFavorites, exercise.nombreEjer];
+      }
+    });
+  };
+
   return (
-    <div className="bg-[#292929] min-h-screen" style={{
-      backgroundColor: '#292929', // Base background color
-      backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
-      backgroundSize: '10px 10px' // CSS pattern
-    }}>
+    <div
+      className="bg-[#292929] min-h-screen"
+      style={{
+        backgroundColor: '#292929',
+        backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
+        backgroundSize: '10px 10px',
+      }}
+    >
       <NavBarClient />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-
         <div className="bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Bienvenido a tu Interfaz de Progreso
+          </h2>
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Bienvenido a su Interfaz de Progreso</h2>
-
-         
-
-
-          {/* Progress Section */}
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Tu Progreso de Peso Ideal</h3>
-            <LinesChart/>
-            <FormEstadisticasCliente/>
-
+          {/* Section: Exercise Cards */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Tus Ejercicios Favoritos
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {favorites.map((exercise) => (
+                <div
+                  key={exercise.nombreEjer}
+                  className="bg-[#474747] rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-150 text-[#F7F7F7] flex flex-col"
+                >
+                  <button
+                    onClick={() => openModal(exercise)}
+                    className="w-full"
+                  >
+                    <div className="h-48 sm:h-56 bg-gray-200">
+                      <img
+                        src={`/images/${exercise.imagen_ejercicio}`}
+                        alt={exercise.nombreEjer}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-4 sm:p-6 flex-grow">
+                      <h3 className="text-lg sm:text-xl font-bold mb-2">
+                        {exercise.nombreEjer}
+                      </h3>
+                      <p>{exercise.descripcion}</p>
+                    </div>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
+
+          {/* Section: FormEstadisticasCliente */}
+          <div className="border-t border-gray-200 pt-6 mb-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Tu Progreso de Peso Ideal
+            </h3>
+            <div className="w-full max-w-3xl mx-auto">
+              <FormEstadisticasCliente />
+            </div>
+          </div>
+
+          {/* Section: LinesChart */}
+          <div className="border-t border-gray-200 pt-6 mb-8 ">
+            <div>
+              <LinesChart />
+            </div>
+          </div>
+
+          {/* Exercise Details Modal */}
+          {isModalOpen && selectedExercise && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-30">
+              <div className="bg-[#292929] p-4 sm:p-6 rounded-lg w-full max-w-md md:max-w-3xl h-auto md:h-4/6 relative overflow-y-auto transition-all duration-300">
+                <button
+                  onClick={closeModal}
+                  className="absolute top-2 right-2 text-white hover:text-gray-900 text-2xl transition-colors duration-300"
+                >
+                  ×
+                </button>
+                <div>
+                  <div className="flex items-center justify-start mb-4">
+                    <h2 className="text-white text-xl md:text-2xl font-bold mr-2">
+                      {selectedExercise.nombreEjer}
+                    </h2>
+                    <button
+                      onClick={() => handleFavoriteToggle(selectedExercise)}
+                      className="bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-all"
+                    >
+                      <FavoriteIcon
+                        fontSize="large"
+                        className={favoriteExercises.includes(selectedExercise.nombreEjer) ? 'text-yellow-500' : ''}
+                      />
+                    </button>
+                  </div>
+                  <div className="h-60 md:h-80 bg-gray-200 mt-4">
+                    <img
+                      src={`/images/${selectedExercise.imagen_ejercicio}`}
+                      alt={selectedExercise.nombreEjer}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="mt-4 text-white"><strong>Repeticiones:</strong> {selectedExercise.repeticiones}</p>
+                  <p className="mt-4 text-white"><strong>Levantamientos:</strong> {selectedExercise.levantamientos}</p>
+                  <p className="mt-4 text-white"><strong>Descripción:</strong> {selectedExercise.descripcion}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}

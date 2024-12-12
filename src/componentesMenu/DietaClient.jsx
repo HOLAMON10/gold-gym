@@ -57,7 +57,7 @@ const NutritionGuide = () => {
     >
       <NavBarClient />
       <div className="flex flex-col items-center py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl sm:text-5xl font-bold text-white mb-8 text-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-8 text-center">
           Nutritional Recommendations
         </h1>
 
@@ -84,7 +84,7 @@ const NutritionGuide = () => {
           <p className="text-red-500">{error}</p>
         ) : (
           // Display fetched recommendations
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 w-2/4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full sm:w-3/4 lg:w-2/3">
             {recommendations.map((rec) => (
               <div
                 key={rec.id}
@@ -100,7 +100,7 @@ const NutritionGuide = () => {
                   <img
                     src={`/images/${rec.imagen_recom}` || '/images/placeholder.png'}
                     alt="Recommendation"
-                    className="w-full h-48 object-cover rounded-lg mb-4"
+                    className="w-full h-48 sm:h-56 object-cover rounded-lg mb-4"
                   />
                   <div className="mt-4 text-xs sm:text-sm text-white">
                     <p className="text-lg">
@@ -127,11 +127,11 @@ const NutritionGuide = () => {
                 {selectedRecommendation.objetivo}
               </h2>
               <div className="mt-4 text-xs sm:text-sm text-white">
-              <img
-                    src={`/images/${selectedRecommendation.imagen_recom}` || '/images/placeholder.png'}
-                    alt="Recommendation"
-                    className="w-full h-48 object-cover rounded-lg mb-4"
-                  />
+                <img
+                  src={`/images/${selectedRecommendation.imagen_recom}` || '/images/placeholder.png'}
+                  alt="Recommendation"
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
                 <p>
                   <strong>Calories:</strong> {selectedRecommendation.calorias} kcal
                 </p>

@@ -96,7 +96,7 @@ function MenuRecoAlimenAdmin() {
         formData.append('carbo', carbo);
         formData.append('proteina', proteina);
         formData.append('objetivo', objetivo);
-        
+
 
         if (fileInputRef.current.files[0]) {
             formData.append('imagen_recom', fileInputRef.current.files[0]);
@@ -112,7 +112,7 @@ function MenuRecoAlimenAdmin() {
                     alert('Recomendacion actualizado correctamente');
                     setShowEditPopup(false);  // Cerrar el popup
                     // Actualizar la tabla de ejercicios con los nuevos datos
-                    setRecoAlimen(prevRecoAlimen => prevRecoAlimen.map(ej => ej.id === SelectedRecoAlimen.id ? { ...ej, objetivo: objetivo, calorias, proteina, carbo, imagen_recom: data.imagen_imagen_recom} : ej));
+                    setRecoAlimen(prevRecoAlimen => prevRecoAlimen.map(ej => ej.id === SelectedRecoAlimen.id ? { ...ej, objetivo: objetivo, calorias, proteina, carbo, imagen_recom: data.imagen_imagen_recom } : ej));
 
                 } else {
                     alert(data.error);
@@ -146,11 +146,11 @@ function MenuRecoAlimenAdmin() {
             <NavigationMenu />
 
             <div id="menu-admin-container" className="bg-[#292929] min-h-screen"
-      style={{
-        backgroundColor: '#292929',
-        backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
-        backgroundSize: '10px 10px',
-      }}>
+                style={{
+                    backgroundColor: '#292929',
+                    backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
+                    backgroundSize: '10px 10px',
+                }}>
 
                 <br />
                 <h2 style={{ color: 'white', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Recomendación Alimenticia</h2>
@@ -164,6 +164,8 @@ function MenuRecoAlimenAdmin() {
                             <th>Carbohidratos</th>
                             <th>Imagen</th>
                             <th></th>
+                            <th></th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -174,6 +176,8 @@ function MenuRecoAlimenAdmin() {
                                     <td>{reco.calorias}</td>
                                     <td>{reco.proteina}</td>
                                     <td>{reco.carbo}</td>
+                                    
+                          
                                     <td>
                                         {reco.imagen_recom ? (
                                             <img
@@ -185,10 +189,11 @@ function MenuRecoAlimenAdmin() {
                                             <span>No Image</span>
                                         )}
                                     </td>
+                                    
                                     <td>
                                         <button
                                             style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
-                                            onClick={() => handleEditarRecoAlimen(reco)}
+                                            onClick={() => handleActualizarRecoAlimen(reco)}
                                         >
                                             Editar
                                         </button>
@@ -196,7 +201,7 @@ function MenuRecoAlimenAdmin() {
                                     <td>
                                         <button
                                             style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
-                                            onClick={() => handleEliminarRecoAlimen(reco.id)} // Llamada a la función de eliminación
+                                            onClick={() => handleEliminarRecoAlimen(reco.id)}
                                         >
                                             Eliminar
                                         </button>
@@ -221,46 +226,46 @@ function MenuRecoAlimenAdmin() {
                             <h3>Editar Recomendacion</h3>
                             {/* Cropper Section at the top */}
                             <div className="flex flex-col items-center mb-4">
-                                    {image ? (
-                                        <div className="relative w-full" style={{ height: "300px" }}>
-                                            <Cropper
-                                                image={image}
-                                                crop={crop}
-                                                zoom={zoom}
-                                                aspect={1}
-                                                onCropChange={onCropChange}
-                                                onCropComplete={onCropComplete}
-                                                onZoomChange={(newZoom) => setZoom(newZoom)}
-                                            />
+                                {image ? (
+                                    <div className="relative w-full" style={{ height: "300px" }}>
+                                        <Cropper
+                                            image={image}
+                                            crop={crop}
+                                            zoom={zoom}
+                                            aspect={1}
+                                            onCropChange={onCropChange}
+                                            onCropComplete={onCropComplete}
+                                            onZoomChange={(newZoom) => setZoom(newZoom)}
+                                        />
+                                    </div>
+                                ) : (
+                                    <button onClick={() => fileInputRef.current.click()}>
+                                        <div className="w-32 h-32 sm:w-48 sm:h-48 bg-gray-300 rounded-full mb-4 overflow-hidden">
+                                            {imagen_recom ? (
+                                                <img
+                                                    src={`/images/${imagen_recom}`}
+                                                    alt="Current Exercise Image"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src="/images/genericpp.png"
+                                                    alt="Profile Preview"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            )}
                                         </div>
-                                    ) : (
-                                        <button onClick={() => fileInputRef.current.click()}>
-                                            <div className="w-32 h-32 sm:w-48 sm:h-48 bg-gray-300 rounded-full mb-4 overflow-hidden">
-                                                {imagen_recom ? (
-                                                    <img
-                                                        src={`/images/${imagen_recom}`}
-                                                        alt="Current Exercise Image"
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <img
-                                                        src="/images/genericpp.png"
-                                                        alt="Profile Preview"
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                )}
-                                            </div>
-                                        </button>
-                                    )}
+                                    </button>
+                                )}
 
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        style={{ display: "none" }}
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                    />
-                                </div>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    style={{ display: "none" }}
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                />
+                            </div>
                             <div>
                                 <label htmlFor="objetivo">Objetivo</label>
                                 <input

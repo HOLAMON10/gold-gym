@@ -148,9 +148,12 @@ function MenuEjercicioAdmin() {
           backgroundSize: '10px 10px',
         }}>
             <NavigationMenu />
+            <div>
+            <FormCrearEjercicio />
+            </div>
             <div id="menu-admin-container">
                 <br />
-                <h2 style={{ color: 'white', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Ejercicios para bajar de peso</h2>
+                <h2 style={{ color: 'white', fontSize: '36px', fontFamily: 'Arial, sans-serif' }}>Ejercicios Agregados</h2>
 
                 <table id="ejercicio">
                     <thead>
@@ -213,7 +216,7 @@ function MenuEjercicioAdmin() {
                     </tbody>
                 </table>
                 <br />
-                <FormCrearEjercicio />
+                
 
                 {/* Ventana emergente de edición */}
                 {showEditPopup && (

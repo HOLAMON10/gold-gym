@@ -22,7 +22,7 @@ function NavBarClient() {
                 <div className="flex justify-between items-center py-4">
                     {/* Logo or Brand Name */}
                     <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wider hover:text-teal-400 transition duration-300 ease-in-out">
-                        Valerio Fitness
+                        Flex Fitness
                     </h1>
 
                     {/* Hamburger Menu for smaller screens */}

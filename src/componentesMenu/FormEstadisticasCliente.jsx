@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import './MenuAdmin.css';
 
 function FormEstadisticasCliente() {
     const [peso, setPeso] = useState('');
@@ -48,17 +47,19 @@ function FormEstadisticasCliente() {
     };
 
     return (
-        <div className="form-small-container2">
-            <h2>Calcular Escala de Peso Ideal</h2>
-            {error && <div className="error-message">{error}</div>}  {/* Mensaje de error */}
+        <div className="max-w-lg mx-auto p-6 bg-[#292929] rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold text-white text-center mb-6">
+                Calcular Escala de Peso Ideal
+            </h2>
+            {error && <div className="text-red-500 text-center mb-4">{error}</div>}  {/* Mensaje de error */}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <input
                     type="text"
                     value={peso}
                     onChange={(e) => setPeso(e.target.value)}
                     placeholder="Ingresa peso"
-                    className="inputs-Crear"
+                    className="p-3 text-white bg-gray-700 rounded-md placeholder-gray-400"
                 />
 
                 <input
@@ -66,7 +67,7 @@ function FormEstadisticasCliente() {
                     value={altura}
                     onChange={(e) => setAltura(e.target.value)}
                     placeholder="Ingrese altura"
-                    className="inputs-Crear"
+                    className="p-3 text-white bg-gray-700 rounded-md placeholder-gray-400"
                 />
 
                 <input
@@ -74,10 +75,10 @@ function FormEstadisticasCliente() {
                     value={edad}
                     onChange={(e) => setEdad(e.target.value)}
                     placeholder="Ingrese edad"
-                    className="inputs-Crear"
+                    className="p-3 text-white bg-gray-700 rounded-md placeholder-gray-400"
                 />
 
-                <div className="formCheck">
+                <div className="flex gap-6 justify-between text-white">
                     <div>
                         <input
                             id="checkV"
@@ -86,6 +87,7 @@ function FormEstadisticasCliente() {
                             value="Hombre"
                             checked={sexo === 'Hombre'}
                             onChange={() => setSexo('Hombre')}
+                            className="mr-2"
                         />
                         <label htmlFor="checkV">Hombre</label>
                     </div>
@@ -98,15 +100,21 @@ function FormEstadisticasCliente() {
                             value="Mujer"
                             checked={sexo === 'Mujer'}
                             onChange={() => setSexo('Mujer')}
+                            className="mr-2"
                         />
                         <label htmlFor="checkM">Mujer</label>
                     </div>
                 </div>
 
-                <button type="submit" className="btn-crear-estadistica">Calcular Escala</button>
+                <button
+                    type="submit"
+                    className="mt-6 p-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+                >
+                    Calcular Escala
+                </button>
             </form>
 
-            {escala && <p>Escala calculada: {escala}</p>}
+            {escala && <p className="mt-6 text-white text-center">Escala calculada: {escala}</p>}
         </div>
     );
 }
