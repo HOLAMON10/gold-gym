@@ -1155,7 +1155,7 @@ def get_favorites():
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT e.idEjercicio, e.nombreEjer
+        SELECT e.idEjercicio, e.nombreEjer, e.repeticiones, e.levantamientos, e.imagen_ejercicio, e.descripcion, e.objetivo
         FROM rutinapersonalizada rp
         JOIN ejercicio e ON rp.id_ejercicio = e.idEjercicio
         WHERE rp.id_persona = %s
@@ -1165,7 +1165,7 @@ def get_favorites():
 
     # If the result is not empty, return the exercises
     if result:
-        favorites = [{"id_ejercicio": row[0], "nombreEjer": row[1]} for row in result]
+        favorites = [{"id_ejercicio": row[0], "nombreEjer": row[1],"descripcion": row[5], "repeticiones": row[3], "levantamientos": row[2],"imagen_ejercicio": row[4], "objetivo": row[6]} for row in result]
         return jsonify(favorites), 200
     else:
         return jsonify([]), 200
