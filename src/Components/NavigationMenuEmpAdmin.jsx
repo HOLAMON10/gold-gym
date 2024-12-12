@@ -23,7 +23,7 @@ function NavBar() {
                 <div className="flex justify-between items-center py-4">
                     {/* Logo or Brand Name */}
                     <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wider hover:text-teal-400 transition duration-300 ease-in-out">
-                        Valerio Fitness
+                        Flex Fitness
                     </h1>
 
                     {/* Hamburger Menu for smaller screens */}
@@ -84,7 +84,7 @@ function NavBar() {
                                         : "text-gray-300 hover:text-teal-400 transition duration-300 ease-in-out"
                                 }
                             >
-                                Perfil
+                                Clientes
                             </NavLink>
                         </PrivateRoute>
                         <PrivateRoute>
@@ -96,21 +96,10 @@ function NavBar() {
                                         : "text-gray-300 hover:text-teal-400 transition duration-300 ease-in-out"
                                 }
                             >
-                                Entrenadores
+                                Empleados
                             </NavLink>
                         </PrivateRoute>
-                        <PrivateRoute>
-                            <NavLink
-                                to="/componentesMenu/MenuAdmin"
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? "text-white font-semibold border-b-2 border-teal-400"
-                                        : "text-gray-300 hover:text-teal-400 transition duration-300 ease-in-out"
-                                }
-                            >
-                                Soporte
-                            </NavLink>
-                        </PrivateRoute>
+                        
                         <button
                             onClick={handleLogout}
                             className="text-gray-400 hover:text-white transition duration-300 ease-in-out"
