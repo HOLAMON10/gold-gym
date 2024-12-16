@@ -36,7 +36,7 @@ const Rutinas = () => {
                 });
                 const favoriteData = await favoritesResponse.json();
                 const favoriteIds = favoriteData.map(favorite => favorite.nombreEjer);
-                console.log("test",favoriteIds)
+                console.log("test", favoriteIds)
                 setFavoriteExercises(favoriteIds);
 
             } catch (error) {
@@ -217,7 +217,7 @@ const Rutinas = () => {
             {/* Modal Responsiveness */}
             {isModalOpen && selectedExercise && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-30">
-                    <div className="bg-[#292929] p-4 sm:p-6 rounded-lg w-full max-w-md md:max-w-3xl h-auto md:h-4/6 relative overflow-y-auto">
+                    <div className="bg-[#292929] p-4 sm:p-6 rounded-lg w-full max-w-sm md:max-w-lg h-auto md:h-6/6 relative overflow-y-auto">
                         <button
                             onClick={closeModal}
                             className="absolute top-2 right-2 text-white hover:text-gray-900 text-2xl"
@@ -241,17 +241,17 @@ const Rutinas = () => {
                                 </button>
                             </div>
                             {/* Image section */}
-                            <div className="h-60 md:h-80 bg-gray-200 mt-4">
+                            <div className="h-72 md:h-[75%] bg-gray-200 mt-4 flex items-center justify-center">
                                 <img
                                     src={`/images/${selectedExercise.imagen_ejercicio}`}
                                     alt={selectedExercise.nombreEjer}
-                                    className="w-full h-full object-cover"
+                                    className="max-h-full max-w-full object-contain"
                                 />
                             </div>
                             {/* Exercise details */}
                             <p className="mt-4 text-white"><strong>Repeticiones:</strong> {selectedExercise.repeticiones}</p>
                             <p className="mt-4 text-white"><strong>Levantamientos:</strong> {selectedExercise.levantamientos}</p>
-                            <p className="mt-4 text-white"><strong>Series:</strong> {selectedExercise.series}</p>
+                            <p className="mt-4 text-white"><strong>Descripcion:</strong> {selectedExercise.descripcion}</p>
                         </div>
                     </div>
                 </div>
