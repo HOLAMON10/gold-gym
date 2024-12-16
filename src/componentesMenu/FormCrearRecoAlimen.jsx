@@ -42,7 +42,11 @@ function FormCrearRecoAlimen() {
         const calorias = document.getElementById("calorias").value;
         const proteina = document.getElementById("proteina").value;
         const carbo = document.getElementById("carbo").value;
-    
+
+        if (!objetivo || !calorias || !proteina || !carbo || (!preview && !originalFile)) {
+            alert("Todos los campos son requeridos");
+            return
+        }    
         // Create a FormData object
         const formData = new FormData();
         formData.append("objetivo", objetivo);

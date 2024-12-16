@@ -28,7 +28,7 @@ function FormCrearUsuario() {
 
         // Validación de campos
         if (!nombre || !cedula || !rol || !usuario || !contra || !correo || !edad) {
-            setError("Todos los campos son requeridos");
+            alert("Todos los campos son requeridos");
             return;
         }
 

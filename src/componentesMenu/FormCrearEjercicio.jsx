@@ -44,6 +44,11 @@ function FormCrearEjercicio() {
     const levantamientos = document.getElementById("levantamientos").value;
     const objetivo = document.getElementById("objetivo").value;
     const descripcion = document.getElementById("descripcion").value;
+    
+    if (!nombreEjer || !repeticiones || !levantamientos || !objetivo || !descripcion || (!preview && !originalFile)) {
+      alert("Todos los campos son requeridos");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("nombreEjer", nombreEjer);
