@@ -165,7 +165,7 @@ function MenuRecoAlimenAdmin() {
                             <th>Imagen</th>
                             <th></th>
                             <th></th>
-                            
+
                         </tr>
                     </thead>
                     <tbody>
@@ -176,8 +176,8 @@ function MenuRecoAlimenAdmin() {
                                     <td>{reco.calorias}</td>
                                     <td>{reco.proteina}</td>
                                     <td>{reco.carbo}</td>
-                                    
-                          
+
+
                                     <td>
                                         {reco.imagen_recom ? (
                                             <img
@@ -189,11 +189,11 @@ function MenuRecoAlimenAdmin() {
                                             <span>No Image</span>
                                         )}
                                     </td>
-                                    
+
                                     <td>
                                         <button
                                             style={{ backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
-                                            onClick={() => handleActualizarRecoAlimen(reco)}
+                                            onClick={() => handleEditarRecoAlimen(reco)}
                                         >
                                             Editar
                                         </button>
@@ -239,7 +239,9 @@ function MenuRecoAlimenAdmin() {
                                         />
                                     </div>
                                 ) : (
-                                    <button onClick={() => fileInputRef.current.click()}>
+                                    <button
+                                        onClick={() => {fileInputRef.current.click()}}
+                                    >
                                         <div className="w-32 h-32 sm:w-48 sm:h-48 bg-gray-300 rounded-full mb-4 overflow-hidden">
                                             {imagen_recom ? (
                                                 <img
