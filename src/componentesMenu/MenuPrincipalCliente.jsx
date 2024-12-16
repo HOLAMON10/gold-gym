@@ -123,45 +123,48 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Exercise Details Modal */}
           {isModalOpen && selectedExercise && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-30">
-              <div className="bg-[#292929] p-4 sm:p-6 rounded-lg w-full max-w-md md:max-w-3xl h-auto md:h-4/6 relative overflow-y-auto transition-all duration-300">
-                <button
-                  onClick={closeModal}
-                  className="absolute top-2 right-2 text-white hover:text-gray-900 text-2xl transition-colors duration-300"
-                >
-                  ×
-                </button>
-                <div>
-                  <div className="flex items-center justify-start mb-4">
-                    <h2 className="text-white text-xl md:text-2xl font-bold mr-2">
-                      {selectedExercise.nombreEjer}
-                    </h2>
-                    <button
-                      onClick={() => handleFavoriteToggle(selectedExercise)}
-                      className="bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-all"
-                    >
-                      <FavoriteIcon
-                        fontSize="large"
-                        className={favoriteExercises.includes(selectedExercise.nombreEjer) ? 'text-yellow-500' : ''}
-                      />
-                    </button>
-                  </div>
-                  <div className="h-60 md:h-80 bg-gray-200 mt-4">
-                    <img
-                      src={`/images/${selectedExercise.imagen_ejercicio}`}
-                      alt={selectedExercise.nombreEjer}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <p className="mt-4 text-white"><strong>Repeticiones:</strong> {selectedExercise.repeticiones}</p>
-                  <p className="mt-4 text-white"><strong>Levantamientos:</strong> {selectedExercise.levantamientos}</p>
-                  <p className="mt-4 text-white"><strong>Descripción:</strong> {selectedExercise.descripcion}</p>
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-30">
+                    <div className="bg-[#292929] p-4 sm:p-6 rounded-lg w-full max-w-sm md:max-w-lg h-auto md:h-6/6 relative overflow-y-auto">
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-2 right-2 text-white hover:text-gray-900 text-2xl"
+                        >
+                            ×
+                        </button>
+                        <div>
+                            {/* Flex container for nombreEjer and favorite icon */}
+                            <div className="flex items-center justify-start mb-4">
+                                <h2 className="text-white text-xl md:text-2xl font-bold mr-2">
+                                    {selectedExercise.nombreEjer}
+                                </h2>
+                                <button
+                                    onClick={() => handleFavoriteToggle(selectedExercise)}
+                                    className="bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-all"
+                                >
+                                    <FavoriteIcon
+                                        fontSize="large"
+                                        className={favoriteExercises.includes(selectedExercise.nombreEjer) ? "text-yellow-500" : ""}
+                                    />
+                                </button>
+                            </div>
+                            {/* Image section */}
+                            <div className="h-72 md:h-[75%] bg-gray-200 mt-4 flex items-center justify-center">
+                                <img
+                                    src={`/images/${selectedExercise.imagen_ejercicio}`}
+                                    alt={selectedExercise.nombreEjer}
+                                    className="max-h-full max-w-full object-contain"
+                                />
+                            </div>
+                            {/* Exercise details */}
+                            <p className="mt-4 text-white"><strong>Repeticiones:</strong> {selectedExercise.repeticiones}</p>
+                            <p className="mt-4 text-white"><strong>Levantamientos:</strong> {selectedExercise.levantamientos}</p>
+                            <p className="mt-4 text-white"><strong>Descripcion:</strong> {selectedExercise.descripcion}</p>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          )}
+            )}
+
         </div>
 
         {/* Footer */}
