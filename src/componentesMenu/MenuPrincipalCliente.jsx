@@ -138,15 +138,7 @@ const Dashboard = () => {
                                 <h2 className="text-white text-xl md:text-2xl font-bold mr-2">
                                     {selectedExercise.nombreEjer}
                                 </h2>
-                                <button
-                                    onClick={() => handleFavoriteToggle(selectedExercise)}
-                                    className="bg-red-500 p-2 rounded-full text-white hover:bg-red-600 transition-all"
-                                >
-                                    <FavoriteIcon
-                                        fontSize="large"
-                                        className={favoriteExercises.includes(selectedExercise.nombreEjer) ? "text-yellow-500" : ""}
-                                    />
-                                </button>
+                               
                             </div>
                             {/* Image section */}
                             <div className="h-72 md:h-[75%] bg-gray-200 mt-4 flex items-center justify-center">
